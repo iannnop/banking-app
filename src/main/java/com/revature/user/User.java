@@ -116,6 +116,10 @@ public class User {
     }
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    } //TODO Questionable necessity
+
+    public Account getAccount(int index) {
+        return accounts.get(index);
     }
 
     @Override
@@ -133,5 +137,9 @@ public class User {
                 ", address='" + address + '\'' +
                 ", accounts=" + accounts +
                 '}';
+    }
+
+    public void addAccount(double startingBalance) {
+        accounts.add(accountDAO.createAccount(id, startingBalance));
     }
 }
