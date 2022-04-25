@@ -3,11 +3,13 @@ package com.revature.account;
 import com.revature.exception.NegativeBalanceException;
 import com.revature.transaction.Transaction;
 import com.revature.transaction.TransactionDAOImpl;
+import com.revature.transaction.TransactionType;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 public class Account {
+    private static final AccountDAOImpl accountDAO = new AccountDAOImpl();
     private static final TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
 
     private final int id;
@@ -84,30 +86,15 @@ public class Account {
                 '}';
     }
 
-    public void addTransaction(Transaction t) {
-        try {
-            transactionDAO.createTransaction(t);
-            transactions.add(t);
-        } catch (NegativeBalanceException e) {
-            e.printStackTrace();
-        }
-    }
-    public void updateTransaction(Transaction oldTransaction, Transaction newTransaction) {
-        try {
-            transactionDAO.updateTransaction(oldTransaction, newTransaction);
-            int oldIndex = transactions.indexOf(oldTransaction);
-            transactions.set(oldIndex, newTransaction);
-        } catch (NegativeBalanceException e) {
-            e.printStackTrace();
-        }
+    public void deposit(double amount, String description) {
+        balance += amount;
+        transactions.add(transactionDAO.createTransaction(0, id, amount, TransactionType.DEPOSIT, description, balance));
+        accountDAO.updateAccount(this);
     }
 
-    public void removeTransaction(Transaction t) {
-        try {
-            transactionDAO.deleteTransaction(t);
-            transactions.remove(t);
-        } catch (NegativeBalanceException e) {
-            e.printStackTrace();
-        }
+    public void withdraw(double amount, String description) throws NegativeBalanceException {
+        balance -= amount;
+        transactions.add(transactionDAO.createTransaction(0, 0, amount, TransactionType.WITHDRAWAL, description, balance));
+        accountDAO.updateAccount(this);
     }
 }
