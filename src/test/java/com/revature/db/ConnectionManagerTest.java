@@ -10,7 +10,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void connectionTest() {
-        Connection connection = ConnectionManager.connect();
+        Connection connection = ConnectionManager.getConnection();
         assertNotNull(connection);
     }
 }

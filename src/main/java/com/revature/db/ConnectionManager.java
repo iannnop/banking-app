@@ -11,7 +11,8 @@ public class ConnectionManager {
     private final static String username = "";
     private final static String password = "";
 
-    public static Connection connect() {
+    private ConnectionManager() {}
+    public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 Class.forName("org.postgresql.Driver");
