@@ -10,8 +10,9 @@ public class Transaction {
     private final double amount;
     private final TransactionType type;
     private String description;
+    private final double newBalance;
     public Transaction(int id, int senderId, int receiverId, Timestamp timestamp,
-                       double amount, TransactionType type, String description) {
+                       double amount, TransactionType type, String description, double newBalance) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -19,6 +20,7 @@ public class Transaction {
         this.amount = amount;
         this.type = type;
         this.description = description;
+        this.newBalance = newBalance;
     }
     public int getId() {
         return id;
@@ -34,6 +36,9 @@ public class Transaction {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public double getNewBalance() {
+        return newBalance;
     }
     public Timestamp getTimestamp() {
         return timestamp;
