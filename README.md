@@ -1,6 +1,50 @@
 # Banking App
 
-a fullstack java banking application
+a java banking application with Javalin API
+
+## Installation
+
+Clone the repository
+```
+git clone https://github.com/iannnop/banking-app.git
+```
+
+## File Structure
+
+```
+├───.idea     # IntelliJ IDEA project settings
+└───src   
+    ├───main
+    │   ├───java      # Java source files
+    │   │   └───com
+    │   │       └───revature
+    │   │           ├───account       # Account model/dao/controller
+    │   │           ├───jdbc          # JDBC ConnectionManager Singleton
+    │   │           ├───exception     # Custom exceptions
+    │   │           ├───transaction   # Transaction model/dao/controller
+    │   │           └───user          # User model/dao/controller
+    │   └───resources
+    └───test
+        └───java      # Java test files
+            └───com
+                └───revature
+                    ├───account       #
+                    ├───jdbc          #
+                    ├───transaction   #
+                    └───user          #
+```
+
+## Technologies
+
+- Java (Maven Project)
+- PostgreSQL
+
+### Maven Dependencies
+
+- Javalin
+- Log4j
+- JUnit
+- Mockito
 
 ## Features
 
