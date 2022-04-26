@@ -1,4 +1,4 @@
-package com.revature.db;
+package com.revature.jdbc;
 
 import org.junit.Test;
 

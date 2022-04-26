@@ -1,6 +1,6 @@
 package com.revature.transaction;
 
-import com.revature.db.ConnectionManager;
+import com.revature.jdbc.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
