@@ -1,7 +1,5 @@
 package com.revature.transaction;
 
-import com.revature.account.Account;
-import com.revature.account.AccountStatus;
 import com.revature.db.ConnectionManager;
 
 import java.sql.*;

@@ -6,10 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class UserDAOImpl implements UserDAO {
-    Connection connection = ConnectionManager.getConnection();
 
     @Override
     public User getCustomer(String username) {
+        Connection connection = ConnectionManager.getConnection();
+
         User user = null;
         try {
             String sql = "SELECT * FROM \"User\" WHERE username = ? AND role = 'CUSTOMER'";
@@ -42,6 +43,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getEmployee(String username) {
+        Connection connection = ConnectionManager.getConnection();
+
         User user = null;
         try {
             String sql = "SELECT * FROM \"User\" WHERE username = ? AND role = 'EMPLOYEE'";
@@ -75,6 +78,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getAdmin(String username) {
+        Connection connection = ConnectionManager.getConnection();
+
         User user = null;
         try {
             String sql = "SELECT * FROM \"User\" WHERE username = ? AND role = 'ADMIN'";
@@ -107,6 +112,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ArrayList<User> getAllUsers() {
+        Connection connection = ConnectionManager.getConnection();
+
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -138,6 +145,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ArrayList<User> getAllCustomers() {
+        Connection connection = ConnectionManager.getConnection();
+
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -169,6 +178,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ArrayList<User> getAllEmployees() {
+        Connection connection = ConnectionManager.getConnection();
+
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -200,6 +211,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ArrayList<User> getAllAdmins() {
+        Connection connection = ConnectionManager.getConnection();
+
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -232,6 +245,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User createUser(UserRole role, String username, String password,
                            String firstName, String lastName, String email) {
+        Connection connection = ConnectionManager.getConnection();
+
         User user = null;
         final Timestamp CURRENT_TIME = new Timestamp(System.currentTimeMillis());
         try {
@@ -264,6 +279,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updateUser(User user) {
+        Connection connection = ConnectionManager.getConnection();
+
         try {
             String sql = "UPDATE \"User\" " +
                     "SET role = ?, username = ?, password = ?, " +
@@ -290,6 +307,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void deleteUser(User user) {
+        Connection connection = ConnectionManager.getConnection();
+
         try {
             String sql = "DELETE FROM \"User\" WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);

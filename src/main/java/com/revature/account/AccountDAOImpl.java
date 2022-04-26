@@ -1,15 +1,16 @@
 package com.revature.account;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import com.revature.db.ConnectionManager;
+
+import java.sql.*;
 import java.util.ArrayList;
 
 public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account getAccount(int id) {
+        Connection connection = ConnectionManager.getConnection();
+
         Account account = null;
         try {
             String sql = "SELECT * FROM \"Account\" " +
@@ -39,6 +40,8 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public ArrayList<Account> getUserAccounts(int userId) {
+        Connection connection = ConnectionManager.getConnection();
+
         ArrayList<Account> accounts = new ArrayList<>();
         try {
             String sql = "SELECT * FROM \"UserAccount\" INNER JOIN \"Account\" " +
@@ -67,6 +70,8 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account createAccount(int userId) {
+        Connection connection = ConnectionManager.getConnection();
+
         Account account = null;
         final Timestamp CURRENT_TIME = new Timestamp(System.currentTimeMillis());
         try {
@@ -100,6 +105,8 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public void updateAccount(Account account) {
+        Connection connection = ConnectionManager.getConnection();
+
         try {
             String sql = "UPDATE \"Account\" SET status = ?, balance = ?, description = ? WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -116,7 +123,9 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public void deleteAccount(Account account) { //TODO Fix error with this, deleting is complex
+    public void deleteAccount(Account account) {
+        Connection connection = ConnectionManager.getConnection();
+
         try {
             String sql = "DELETE FROM \"Account\" WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
