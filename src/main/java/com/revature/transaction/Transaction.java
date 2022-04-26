@@ -6,21 +6,19 @@ public class Transaction {
     private final int id;
     private final int senderId;
     private final int receiverId;
-    private final Timestamp timestamp;
+    private final Timestamp transactionCreated;
     private final double amount;
     private final TransactionType type;
     private String description;
-    private final double newBalance;
-    public Transaction(int id, int senderId, int receiverId, Timestamp timestamp,
-                       double amount, TransactionType type, String description, double newBalance) {
+    public Transaction(int id, int senderId, int receiverId, Timestamp transactionCreated,
+                       double amount, TransactionType type, String description) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.timestamp = timestamp;
+        this.transactionCreated = transactionCreated;
         this.amount = amount;
         this.type = type;
         this.description = description;
-        this.newBalance = newBalance;
     }
     public int getId() {
         return id;
@@ -37,16 +35,26 @@ public class Transaction {
     public void setDescription(String description) {
         this.description = description;
     }
-    public double getNewBalance() {
-        return newBalance;
-    }
     public Timestamp getTimestamp() {
-        return timestamp;
+        return transactionCreated;
     }
     public int getSenderId() {
         return senderId;
     }
     public int getReceiverId() {
         return receiverId;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", senderId=" + senderId +
+                ", receiverId=" + receiverId +
+                ", timestamp=" + transactionCreated +
+                ", amount=" + amount +
+                ", type=" + type +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
