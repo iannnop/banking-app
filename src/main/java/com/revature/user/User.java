@@ -2,9 +2,7 @@ package com.revature.user;
 
 import com.revature.account.Account;
 import com.revature.account.AccountDAOImpl;
-import com.revature.transaction.TransactionDAOImpl;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.accounts = accountDAO.getAllAccounts(id);
+        this.accounts = accountDAO.getUserAccounts(id);
     }
 
     /*
@@ -54,7 +52,7 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.address = address;
-        this.accounts = accountDAO.getAllAccounts(id);
+        this.accounts = accountDAO.getUserAccounts(id);
     }
 
     public int getId() {
@@ -114,10 +112,6 @@ public class User {
     public List<Account> getAccounts() {
         return accounts;
     }
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    } //TODO Questionable necessity
-
     public Account getAccount(int index) {
         return accounts.get(index);
     }
@@ -139,7 +133,13 @@ public class User {
                 '}';
     }
 
-    public void addAccount(double startingBalance) {
-        accounts.add(accountDAO.createAccount(id, startingBalance));
+    public void applyForAccount(double startingBalance) {
+        Account account = accountDAO.createAccount(id);
+        account.deposit(startingBalance, "Starting balance deposit");
+        accounts.add(account);
+    }
+    public void deleteAccount(Account account) {
+        accountDAO.deleteAccount(account);
+        accounts.remove(account);
     }
 }
