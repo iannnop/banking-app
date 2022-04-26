@@ -74,6 +74,13 @@ public class Account {
         this.description = description;
     }
 
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+    public Transaction getTransaction(int index) {
+        return transactions.get(index);
+    }
+
     @Override
     public String toString() {
         return "Account{" +
@@ -88,13 +95,29 @@ public class Account {
 
     public void deposit(double amount, String description) {
         balance += amount;
-        transactions.add(transactionDAO.createTransaction(0, id, amount, TransactionType.DEPOSIT, description, balance));
+        transactions.add(transactionDAO.createTransaction(0, id, amount, TransactionType.DEPOSIT, description));
         accountDAO.updateAccount(this);
     }
 
     public void withdraw(double amount, String description) throws NegativeBalanceException {
+        if (balance - amount < 0) {
+            throw new NegativeBalanceException("ERROR"); //TODO Add error message
+        }
         balance -= amount;
-        transactions.add(transactionDAO.createTransaction(0, 0, amount, TransactionType.WITHDRAWAL, description, balance));
+        transactions.add(transactionDAO.createTransaction(id, 0, amount, TransactionType.WITHDRAWAL, description));
         accountDAO.updateAccount(this);
+    }
+
+    public void transfer(Account receiver, double amount, String description) throws NegativeBalanceException {
+        if (balance - amount < 0) {
+            throw new NegativeBalanceException("ERROR MESSAGE"); //TODO Add error message
+        }
+        Transaction transaction = transactionDAO.createTransaction(id, receiver.id, amount, TransactionType.TRANSFER, description);
+        balance -= amount;
+        transactions.add(transaction);
+
+        receiver.setBalance(receiver.getBalance()+amount);
+        List<Transaction> receiverTransactions = receiver.getTransactions();
+        receiverTransactions.add(transaction);
     }
 }
