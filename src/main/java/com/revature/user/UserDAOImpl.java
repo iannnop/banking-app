@@ -279,6 +279,7 @@ public class UserDAOImpl implements UserDAO {
             pstmt.setString(6, user.getEmail());
             pstmt.setString(7, user.getPhone());
             pstmt.setString(8, user.getAddress());
+            pstmt.setInt(9, user.getId());
 
             pstmt.execute();
 
@@ -290,7 +291,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void deleteUser(User user) {
         try {
-            String sql = "DELETE FROM \"UserAccount\" WHERE id = ?;DELETE FROM \"User\" WHERE id = ?";
+            String sql = "DELETE FROM \"User\" WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, user.getId());
 
