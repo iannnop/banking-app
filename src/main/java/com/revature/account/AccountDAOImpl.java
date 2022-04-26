@@ -1,8 +1,5 @@
 package com.revature.account;
 
-import com.revature.user.User;
-import com.revature.user.UserRole;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -15,7 +12,9 @@ public class AccountDAOImpl implements AccountDAO {
     public Account getAccount(int id) {
         Account account = null;
         try {
-            String sql = "SELECT * FROM \"Account\" WHERE id = ?";
+            String sql = "SELECT * FROM \"Account\" " +
+                    "INNER JOIN \"UserAccount\" ON \"Account\".id = \"UserAccount\".account_id " +
+                    "WHERE \"Account\".id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -39,7 +38,7 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public ArrayList<Account> getAllAccounts(int userId) {
+    public ArrayList<Account> getUserAccounts(int userId) {
         ArrayList<Account> accounts = new ArrayList<>();
         try {
             String sql = "SELECT * FROM \"UserAccount\" INNER JOIN \"Account\" " +
@@ -67,29 +66,27 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public Account createAccount(int userId, double startingBalance) {
+    public Account createAccount(int userId) {
         Account account = null;
         final Timestamp CURRENT_TIME = new Timestamp(System.currentTimeMillis());
         try {
-            String sql = "INSERT INTO \"Account\" " +
-                    "(account_created, status, balance) " +
-                    "VALUES (?, ?, ?)";
+            String sql = "INSERT INTO \"Account\" (status, balance) VALUES (?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setTimestamp(1, CURRENT_TIME);
-            pstmt.setString(2, String.valueOf(AccountStatus.PENDING_APPROVAL));
-            pstmt.setDouble(3, startingBalance);
+            pstmt.setString(1, String.valueOf(AccountStatus.PENDING_APPROVAL));
+            pstmt.setDouble(2, 0);
 
             pstmt.execute();
 
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 int id = rs.getInt("id");
-                account = new Account(id, CURRENT_TIME, AccountStatus.PENDING_APPROVAL, startingBalance);
+                account = new Account(id, CURRENT_TIME, AccountStatus.PENDING_APPROVAL, 0);
 
-                String insertUserAccount = "INSERT INTO \"UserAccount\" (user_id, account_id) VALUES (?, ?)";
+                String insertUserAccount = "INSERT INTO \"UserAccount\" (account_created, user_id, account_id) VALUES (?, ?, ?)";
                 PreparedStatement preparedStatement = connection.prepareStatement(insertUserAccount);
-                preparedStatement.setInt(1, userId);
-                preparedStatement.setInt(2, account.getId());
+                preparedStatement.setTimestamp(1, CURRENT_TIME);
+                preparedStatement.setInt(2, userId);
+                preparedStatement.setInt(3, account.getId());
 
                 preparedStatement.execute();
             }
@@ -121,7 +118,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public void deleteAccount(Account account) { //TODO Fix error with this, deleting is complex
         try {
-            String sql = "DELETE FROM \"UserAccount\" WHERE id = ?;DELETE FROM \"User\" WHERE id = ?";
+            String sql = "DELETE FROM \"Account\" WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, account.getId());
 
