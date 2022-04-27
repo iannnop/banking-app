@@ -2,13 +2,15 @@ package com.revature.user;
 
 import com.revature.account.Account;
 import com.revature.account.AccountDAOImpl;
+import com.revature.account.AccountStatus;
+import com.revature.exception.InvalidInputException;
+import com.revature.exception.UnauthorizedException;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.ArrayList;
 
-public class User {
-    private static final AccountDAOImpl accountDAO = new AccountDAOImpl();
-
+public class User implements Serializable {
     private final int id;
     private UserRole role;
     private String username;
@@ -19,13 +21,15 @@ public class User {
     private String email;
     private String phone;
     private String address;
-    private List<Account> accounts;
+    private ArrayList<Account> accounts;
 
     /*
     * User constructor with all required fields
     * */
     public User(int id, UserRole role, String username, String password, Timestamp userCreated,
                 String firstName, String lastName, String email) {
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
         this.id = id;
         this.role = role;
         this.username = username;
@@ -42,6 +46,8 @@ public class User {
     * */
     public User(int id, UserRole role, String username, String password, Timestamp userCreated, String firstName, String lastName,
                 String email, String phone, String address) {
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
         this.id = id;
         this.role = role;
         this.username = username;
@@ -109,7 +115,7 @@ public class User {
     public void setAddress(String address) {
         this.address = address;
     }
-    public List<Account> getAccounts() {
+    public ArrayList<Account> getAccounts() {
         return accounts;
     }
     public Account getAccount(int index) {
@@ -133,13 +139,63 @@ public class User {
                 '}';
     }
 
-    public void applyForAccount(double startingBalance) {
+    public void applyForAccount(double startingBalance) throws InvalidInputException {
+        if (startingBalance <= 0) {
+            throw new InvalidInputException("Starting balance cannot be less than or equal to 0");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
         Account account = accountDAO.createAccount(id);
         account.deposit(startingBalance, "Starting balance deposit");
         accounts.add(account);
     }
-    public void deleteAccount(Account account) {
+    public void applyForJointAccount(double startingBalance, User otherUser) throws InvalidInputException {
+        if (startingBalance <= 0) {
+            throw new InvalidInputException("Starting balance cannot be less than or equal to 0");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
+        Account account = accountDAO.createJointAccount(id, otherUser.getId());
+        account.deposit(startingBalance, "Starting balance deposit");
+
+        ArrayList<Account> otherUserAccounts = otherUser.getAccounts();
+        accounts.add(account);
+        otherUserAccounts.add(account);
+    }
+    public void cancelAccount(Account account) throws UnauthorizedException {
+        if (role.compareTo(UserRole.ADMIN) < 0) {
+            throw new UnauthorizedException("User not authorized to cancel accounts");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
+        account.setStatus(AccountStatus.CANCELLED);
+        accountDAO.updateAccount(account);
+    }
+    public void deleteAccount(Account account) throws UnauthorizedException {
+        if (role.compareTo(UserRole.ADMIN) < 0) {
+            throw new UnauthorizedException("User not authorized to delete accounts");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
         accountDAO.deleteAccount(account);
         accounts.remove(account);
+    }
+    public void approveAccount(Account account) throws UnauthorizedException {
+        if (role.compareTo(UserRole.EMPLOYEE) < 0) {
+            throw new UnauthorizedException("User not authorized to approve accounts");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
+        account.setStatus(AccountStatus.ACTIVE);
+        accountDAO.updateAccount(account);
+    }
+    public void denyAccount(Account account) throws UnauthorizedException {
+        if (role.compareTo(UserRole.EMPLOYEE) < 0) {
+            throw new UnauthorizedException("User not authorized to deny accounts");
+        }
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
+
+        account.setStatus(AccountStatus.DENIED);
+        accountDAO.updateAccount(account);
     }
 }
