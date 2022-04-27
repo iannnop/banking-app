@@ -104,6 +104,45 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
+    public Account createJointAccount(int userId, int otherUserId) {
+        Connection connection = ConnectionManager.getConnection();
+
+        Account account = null;
+        final Timestamp CURRENT_TIME = new Timestamp(System.currentTimeMillis());
+        try {
+            String sql = "INSERT INTO \"Account\" (status, balance) VALUES (?, ?)";
+            PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, String.valueOf(AccountStatus.PENDING_APPROVAL));
+            pstmt.setDouble(2, 0);
+
+            pstmt.execute();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                account = new Account(id, CURRENT_TIME, AccountStatus.PENDING_APPROVAL, 0);
+
+                String insertUserAccount = "INSERT INTO \"UserAccount\" (account_created, user_id, account_id) " +
+                        "VALUES (?, ?, ?), (?, ?, ?)";
+                PreparedStatement preparedStatement = connection.prepareStatement(insertUserAccount);
+                preparedStatement.setTimestamp(1, CURRENT_TIME);
+                preparedStatement.setInt(2, userId);
+                preparedStatement.setInt(3, account.getId());
+                preparedStatement.setTimestamp(4, CURRENT_TIME);
+                preparedStatement.setInt(5, otherUserId);
+                preparedStatement.setInt(6, account.getId());
+
+                preparedStatement.execute();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return account;
+    }
+
+    @Override
     public void updateAccount(Account account) {
         Connection connection = ConnectionManager.getConnection();
 
