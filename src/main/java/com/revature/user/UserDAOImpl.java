@@ -8,6 +8,70 @@ import java.util.ArrayList;
 public class UserDAOImpl implements UserDAO {
 
     @Override
+    public User getUser(int id) {
+        Connection connection = ConnectionManager.getConnection();
+
+        User user = null;
+        try {
+            String sql = "SELECT * FROM \"User\" WHERE id = ?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                UserRole role = UserRole.valueOf(rs.getString("role"));
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                Timestamp userCreated = rs.getTimestamp("user_created");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+
+                user = new User(id, role, username, password, userCreated, firstName, lastName, email, phone, address);
+            }
+
+        } catch (Exception e) {
+            //TODO set up log4j logging
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+    @Override
+    public User getUser(String username) {
+        Connection connection = ConnectionManager.getConnection();
+
+        User user = null;
+        try {
+            String sql = "SELECT * FROM \"User\" WHERE username = ?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                UserRole role = UserRole.valueOf(rs.getString("role"));
+                String password = rs.getString("password");
+                Timestamp userCreated = rs.getTimestamp("user_created");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+
+                user = new User(id, role, username, password, userCreated, firstName, lastName, email, phone, address);
+            }
+
+        } catch (Exception e) {
+            //TODO set up log4j logging
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+    @Override
     public User getCustomer(String username) {
         Connection connection = ConnectionManager.getConnection();
 
@@ -31,7 +95,6 @@ public class UserDAOImpl implements UserDAO {
 
                 user = new User(id, role, username, password, userCreated, firstName, lastName, email, phone, address);
             }
-            //TODO Set up message for user not found
 
         } catch (Exception e) {
             //TODO set up log4j logging
@@ -66,7 +129,6 @@ public class UserDAOImpl implements UserDAO {
                 user = new User(id, role, username, password, userCreated,
                         firstName, lastName, email, phone, address);
             }
-            //TODO Set up message for user not found
 
         } catch (Exception e) {
             //TODO set up log4j logging
@@ -100,7 +162,6 @@ public class UserDAOImpl implements UserDAO {
 
                 user = new User(id, role, username, password, userCreated, firstName, lastName, email, phone, address);
             }
-            //TODO Set up message for user not found
 
         } catch (Exception e) {
             //TODO set up log4j logging
