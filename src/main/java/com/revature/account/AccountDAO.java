@@ -6,6 +6,7 @@ public interface AccountDAO {
     Account getAccount(int id);
     ArrayList<Account> getUserAccounts(int userId);
     Account createAccount(int userId);
+    Account createJointAccount(int userId, int otherUserId);
     void updateAccount(Account account);
     void deleteAccount(Account account);
 }
