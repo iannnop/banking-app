@@ -26,8 +26,8 @@ public class UserTest {
         );
 
         UserDAOImpl userDAO = mock(UserDAOImpl.class);
-        when(userDAO.createUser(user.getRole(), user.getUsername(), user.getPassword(),
-                user.getFirstName(), user.getLastName(), user.getEmail())).thenReturn(user);
+        when(userDAO.createUser(user.getRole(), user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getEmail()))
+            .thenReturn(user);
 
         User createdUser = userDAO.createUser(user.getRole(), user.getUsername(), user.getPassword(),
                 user.getFirstName(), user.getLastName(), user.getEmail());
