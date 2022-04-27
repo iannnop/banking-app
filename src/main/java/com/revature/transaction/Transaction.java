@@ -1,8 +1,10 @@
 package com.revature.transaction;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Transaction {
+public class Transaction implements Serializable {
+
     private final int id;
     private final int senderId;
     private final int receiverId;
