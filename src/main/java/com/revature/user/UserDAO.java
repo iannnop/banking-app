@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public interface UserDAO {
 
+    User getUser(int id);
+    User getUser(String username);
     User getCustomer(String username);
     User getEmployee(String username);
     User getAdmin(String username);
