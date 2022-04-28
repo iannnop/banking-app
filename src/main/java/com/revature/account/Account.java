@@ -1,6 +1,6 @@
 package com.revature.account;
 
-import com.revature.exception.InvalidInputException;
+import com.revature.exception.InvalidBalance;
 import com.revature.exception.NegativeBalanceException;
 import com.revature.transaction.Transaction;
 import com.revature.transaction.TransactionDAOImpl;
@@ -95,9 +95,9 @@ public class Account implements Serializable {
                 '}';
     }
 
-    public void deposit(double amount, String description) throws InvalidInputException {
+    public void deposit(double amount, String description) throws InvalidBalance {
         if (amount <= 0) {
-            throw new InvalidInputException("Deposit amount cannot be less than or equal to 0");
+            throw new InvalidBalance("Deposit amount cannot be less than or equal to 0");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
         TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
@@ -107,9 +107,9 @@ public class Account implements Serializable {
         accountDAO.updateAccount(this);
     }
 
-    public void withdraw(double amount, String description) throws NegativeBalanceException, InvalidInputException {
+    public void withdraw(double amount, String description) throws NegativeBalanceException, InvalidBalance {
         if (amount <= 0) {
-            throw new InvalidInputException("Withdraw amount cannot be less than or equal to 0");
+            throw new InvalidBalance("Withdraw amount cannot be less than or equal to 0");
         }
         if (balance - amount < 0) {
             throw new NegativeBalanceException("Withdraw amount is greater than available balance");
@@ -123,9 +123,9 @@ public class Account implements Serializable {
     }
 
     public void transfer(Account receiver, double amount, String description)
-            throws NegativeBalanceException, InvalidInputException {
+            throws NegativeBalanceException, InvalidBalance {
         if (amount <= 0) {
-            throw new InvalidInputException("Transfer amount cannot be less than or equal to 0");
+            throw new InvalidBalance("Transfer amount cannot be less than or equal to 0");
         }
         if (balance - amount < 0) {
             throw new NegativeBalanceException("Transfer amount is greater than available balance");
