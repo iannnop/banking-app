@@ -1,6 +1,7 @@
 package com.revature.account;
 
-import com.revature.exception.InvalidBalance;
+import com.revature.exception.AccountNotActiveException;
+import com.revature.exception.InvalidAmountException;
 import com.revature.exception.NegativeBalanceException;
 import com.revature.transaction.Transaction;
 import com.revature.transaction.TransactionDAOImpl;
@@ -95,9 +96,12 @@ public class Account implements Serializable {
                 '}';
     }
 
-    public void deposit(double amount, String description) throws InvalidBalance {
+    public void deposit(double amount, String description) throws InvalidAmountException, AccountNotActiveException {
+        if (transactions.size() > 1 && status != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException("ERROR: Cannot deposit to an account that is "+status);
+        }
         if (amount <= 0) {
-            throw new InvalidBalance("Deposit amount cannot be less than or equal to 0");
+            throw new InvalidAmountException("ERROR: Deposit amount cannot be less than or equal to 0");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
         TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
@@ -107,12 +111,16 @@ public class Account implements Serializable {
         accountDAO.updateAccount(this);
     }
 
-    public void withdraw(double amount, String description) throws NegativeBalanceException, InvalidBalance {
+    public void withdraw(double amount, String description)
+            throws NegativeBalanceException, InvalidAmountException, AccountNotActiveException {
+        if (status != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException("ERROR: Cannot withdraw from an account that is "+status);
+        }
         if (amount <= 0) {
-            throw new InvalidBalance("Withdraw amount cannot be less than or equal to 0");
+            throw new InvalidAmountException("ERROR: Withdraw amount cannot be less than or equal to 0");
         }
         if (balance - amount < 0) {
-            throw new NegativeBalanceException("Withdraw amount is greater than available balance");
+            throw new NegativeBalanceException("ERROR: Withdraw amount is greater than available balance");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
         TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
@@ -123,13 +131,20 @@ public class Account implements Serializable {
     }
 
     public void transfer(Account receiver, double amount, String description)
-            throws NegativeBalanceException, InvalidBalance {
+            throws NegativeBalanceException, InvalidAmountException, AccountNotActiveException {
+        if (status != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException("ERROR: Cannot transfer from an account that is "+status);
+        }
+        if (receiver.getStatus() != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException("ERROR: Cannot transfer to an account that is "+receiver.getStatus());
+        }
         if (amount <= 0) {
-            throw new InvalidBalance("Transfer amount cannot be less than or equal to 0");
+            throw new InvalidAmountException("ERROR: Transfer amount cannot be less than or equal to 0");
         }
         if (balance - amount < 0) {
-            throw new NegativeBalanceException("Transfer amount is greater than available balance");
+            throw new NegativeBalanceException("ERROR: Transfer amount is greater than available balance");
         }
+
         TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
 
         Transaction transaction = transactionDAO.createTransaction(id, receiver.id, amount, TransactionType.TRANSFER, description);
