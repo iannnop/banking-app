@@ -3,7 +3,8 @@ package com.revature.user;
 import com.revature.account.Account;
 import com.revature.account.AccountDAOImpl;
 import com.revature.account.AccountStatus;
-import com.revature.exception.InvalidInputException;
+import com.revature.exception.AccountNotActiveException;
+import com.revature.exception.InvalidAmountException;
 import com.revature.exception.UnauthorizedException;
 
 import java.io.Serializable;
@@ -139,9 +140,9 @@ public class User implements Serializable {
                 '}';
     }
 
-    public void applyForAccount(double startingBalance) throws InvalidInputException {
+    public void applyForAccount(double startingBalance) throws InvalidAmountException, AccountNotActiveException {
         if (startingBalance <= 0) {
-            throw new InvalidInputException("Starting balance cannot be less than or equal to 0");
+            throw new InvalidAmountException("Starting balance cannot be less than or equal to 0");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
 
@@ -149,9 +150,10 @@ public class User implements Serializable {
         account.deposit(startingBalance, "Starting balance deposit");
         accounts.add(account);
     }
-    public void applyForJointAccount(double startingBalance, User otherUser) throws InvalidInputException {
+    public void applyForJointAccount(double startingBalance, User otherUser)
+            throws InvalidAmountException, AccountNotActiveException {
         if (startingBalance <= 0) {
-            throw new InvalidInputException("Starting balance cannot be less than or equal to 0");
+            throw new InvalidAmountException("Starting balance cannot be less than or equal to 0");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
 
@@ -197,5 +199,38 @@ public class User implements Serializable {
 
         account.setStatus(AccountStatus.DENIED);
         accountDAO.updateAccount(account);
+    }
+
+    public void printUserInfo() {
+        System.out.printf("USER INFORMATION FOR %s \"%s\"%n", role, username);
+        System.out.printf("======================================%n");
+        System.out.println("user_created: " + userCreated);
+        System.out.println("First Name: " + firstName);
+        System.out.println("Last Name: " + lastName);
+        System.out.println("Number of Accounts: " + accounts.size());
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phone);
+        System.out.println("Address: " + address);
+        System.out.printf("%n======================================%n");
+        System.out.printf("END OF USER REPORT FOR %s \"%s\"%n", role, username);
+    }
+
+    public void printAccounts() {
+        System.out.printf("LIST OF ALL ACCOUNTS FOR USER \"%s\"%n", username);
+        System.out.printf("======================================%n");
+        for (int i = 0; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+            System.out.println("\nACCOUNT " + i);
+            System.out.println("DESCRIPTION: " + account.getDescription()+"\n");
+            System.out.println("account_number: " + i);
+            System.out.println("account_id: " + account.getId());
+            System.out.println("account_created: " + account.getAccountCreated());
+            System.out.println("account_status: " + account.getStatus());
+            System.out.println("account_balance: " + account.getBalance());
+            System.out.println("number_of_transactions: " + account.getTransactions().size());
+            System.out.printf("%n======================================%n");
+        }
+        System.out.println("Total number of accounts: " + accounts.size());
+        System.out.printf("END OF ACCOUNTS REPORT FOR USER \"%s\"%n", username);
     }
 }
