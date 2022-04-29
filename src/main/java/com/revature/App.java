@@ -90,8 +90,6 @@ public class App {
         return visitor;
     }
     public static void adminAccessMenu(User user) {
-        UserRole role = user.getRole();
-        user.setRole(UserRole.ADMIN);
         int accountNumber;
         User otherUser;
         Account account;
@@ -162,14 +160,12 @@ public class App {
                     }
                     break;
                 case 'U':
-                    user.setRole(role);
                     user.printUserInfo();
-                    user.setRole(UserRole.ADMIN);
                     break;
                 case 'I':
                     System.out.println("=== Editing all user information ===");
                     System.out.print("Role (CUSTOMER, EMPLOYEE, ADMIN): ");
-                    role = UserRole.valueOf(sc.next());
+                    user.setRole(UserRole.valueOf(sc.next()));
                     System.out.print("First name: ");
                     user.setFirstName(sc.nextLine());
                     System.out.print("Last name: ");
@@ -320,8 +316,6 @@ public class App {
                     break;
                 case 'X':
                     System.out.println("Exiting user menu for \""+user.getUsername()+"\"...");
-                    user.setRole(role);
-                    userDAO.updateUser(user);
                     break;
                 default:
                     System.out.println("Invalid option");
