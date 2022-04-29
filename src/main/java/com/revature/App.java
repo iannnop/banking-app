@@ -4,6 +4,7 @@ import com.revature.account.Account;
 import com.revature.account.AccountDAOImpl;
 import com.revature.account.AccountStatus;
 import com.revature.exception.InvalidAmountException;
+import com.revature.exception.NegativeBalanceException;
 import com.revature.exception.UnauthorizedException;
 import com.revature.transaction.TransactionDAOImpl;
 import com.revature.user.UserDAOImpl;
@@ -88,6 +89,246 @@ public class App {
         }
         return visitor;
     }
+    public static void adminAccessMenu(User user) {
+        UserRole role = user.getRole();
+        user.setRole(UserRole.ADMIN);
+        int accountNumber;
+        User otherUser;
+        Account account;
+        Account otherAccount;
+        double amount;
+        String username;
+        String description;
+
+        String option = " ";
+        char optionChar = Character.toUpperCase(option.charAt(0));
+        Scanner sc = new Scanner(System.in);
+        while (optionChar != 'X') {
+            System.out.println("\n===== MAIN MENU FOR USER \""+user.getUsername()+"\" ======\n" +
+                    "A - Apply for a new account\n" +
+                    "U - View user information\n" +
+                    "I - Edit user information\n" +
+                    "V - View "+user.getUsername()+"'s accounts\n" +
+                    "P - Print list of transactions for one of \""+user.getUsername()+"\"'s accounts\n" +
+                    "E - Edit an account\n" +
+                    "D - Deposit into an account\n" +
+                    "W - Withdraw from an account\n" +
+                    "T - Transfer money to another account\n" +
+                    "X - Exit user menu\n");
+            System.out.print("Please select an option: ");
+            option = sc.next();
+            sc.nextLine();
+            if (option.length() > 1) {
+                option = " ";
+            }
+            optionChar = Character.toUpperCase(option.charAt(0));
+            switch (optionChar) {
+                case 'A':
+                    System.out.println("What type of account do you want to apply for?\n" +
+                            "P - Personal account\n" +
+                            "J - Joint account\n");
+                    System.out.print("Option: ");
+                    char choice = Character.toUpperCase(sc.next().charAt(0));
+                    System.out.println("How much money will you deposit for your starting balance?");
+                    double startingBalance = sc.nextDouble();
+                    if (choice == 'P') {
+                        try {
+                            user.applyForAccount(startingBalance);
+                        } catch (InvalidAmountException e) {
+                            System.out.println(e.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (choice == 'J') {
+                        System.out.println("What is the username of the other owner of the account?");
+                        username = sc.next();
+                        otherUser = userDAO.getUser(username);
+                        if (otherUser == null) {
+                            System.out.println("User \""+username+"\" was not found.\n" +
+                                    "Returning to main menu...\n");
+                            break;
+                        } else if (user.getUsername().equals(otherUser.getUsername())) {
+                            System.out.println("Other user cannot be yourself.\n" +
+                                    "Returning to main menu...\n");
+                            break;
+                        }
+                        try {
+                            user.applyForJointAccount(startingBalance, otherUser);
+                        } catch (InvalidAmountException e) {
+                            System.out.println(e.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 'U':
+                    user.setRole(role);
+                    user.printUserInfo();
+                    user.setRole(UserRole.ADMIN);
+                    break;
+                case 'I':
+                    System.out.println("=== Editing all user information ===");
+                    System.out.print("Role (CUSTOMER, EMPLOYEE, ADMIN): ");
+                    role = UserRole.valueOf(sc.next());
+                    System.out.print("First name: ");
+                    user.setFirstName(sc.nextLine());
+                    System.out.print("Last name: ");
+                    user.setLastName(sc.nextLine());
+                    System.out.print("Email: ");
+                    user.setEmail(sc.nextLine());
+                    System.out.print("Phone: ");
+                    user.setPhone(sc.nextLine());
+                    System.out.print("Address: ");
+                    user.setAddress(sc.nextLine());
+                    userDAO.updateUser(user);
+                    break;
+                case 'V':
+                    user.printAccounts();
+                    break;
+                case 'P':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to view?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    account.printTransactions();
+                    break;
+                case 'E':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to edit?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("Enter a new description for Account "+accountNumber);
+                    description = sc.nextLine();
+                    account.setDescription(description);
+                    accountDAO.updateAccount(account);
+                    break;
+                case 'D':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to deposit to?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to deposit?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a deposit description:");
+                    description = sc.nextLine();
+                    try {
+                        account.deposit(amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'W':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to withdraw from?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to withdraw?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a withdraw description:");
+                    description = sc.nextLine();
+                    try {
+                        account.withdraw(amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'T':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to transfer from?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("Please enter the username of the user you would like to transfer to:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    } else if (otherUser.getAccounts().size() == 0) {
+                        System.out.println("User \""+username+"\" has no accounts to transfer to\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account would you like to transfer to?");
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    otherAccount = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to transfer?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a transfer description:");
+                    description = sc.nextLine();
+                    try {
+                        account.transfer(otherAccount, amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'X':
+                    System.out.println("Exiting user menu for \""+user.getUsername()+"\"...");
+                    user.setRole(role);
+                    userDAO.updateUser(user);
+                    break;
+                default:
+                    System.out.println("Invalid option");
+                    break;
+            }
+        }
+    }
     public static void customerMenu(User user) {
         int accountNumber;
         User otherUser;
@@ -104,6 +345,7 @@ public class App {
             System.out.println("\n===== MAIN MENU ======\n" +
                     "A - Apply for a new account\n" +
                     "U - View user information\n" +
+                    "I - Edit user information\n" +
                     "V - View your accounts\n" +
                     "P - Print list of transactions for one of your accounts\n" +
                     "E - Edit one of your accounts\n" +
@@ -160,6 +402,20 @@ public class App {
                     break;
                 case 'U':
                     user.printUserInfo();
+                    break;
+                case 'I':
+                    System.out.println("=== Editing personal user information ===");
+                    System.out.print("Please enter your first name: ");
+                    user.setFirstName(sc.nextLine());
+                    System.out.print("Please enter your last name: ");
+                    user.setLastName(sc.nextLine());
+                    System.out.print("Please enter your email: ");
+                    user.setEmail(sc.nextLine());
+                    System.out.print("Please enter your phone number: ");
+                    user.setPhone(sc.nextLine());
+                    System.out.print("Please enter your address: ");
+                    user.setAddress(sc.nextLine());
+                    userDAO.updateUser(user);
                     break;
                 case 'V':
                     user.printAccounts();
@@ -347,6 +603,7 @@ public class App {
                     "Personal Account Management:\n" +
                     "A - Apply for a new account\n" +
                     "U - View user information\n" +
+                    "I - Edit user information\n" +
                     "V - View your accounts\n" +
                     "P - Print list of transactions for one of your accounts\n" +
                     "E - Edit one of your accounts\n" +
@@ -472,6 +729,20 @@ public class App {
                     break;
                 case 'U':
                     user.printUserInfo();
+                    break;
+                case 'I':
+                    System.out.println("=== Editing personal user information ===");
+                    System.out.print("Please enter your first name: ");
+                    user.setFirstName(sc.nextLine());
+                    System.out.print("Please enter your last name: ");
+                    user.setLastName(sc.nextLine());
+                    System.out.print("Please enter your email: ");
+                    user.setEmail(sc.nextLine());
+                    System.out.print("Please enter your phone number: ");
+                    user.setPhone(sc.nextLine());
+                    System.out.print("Please enter your address: ");
+                    user.setAddress(sc.nextLine());
+                    userDAO.updateUser(user);
                     break;
                 case 'V':
                     user.printAccounts();
@@ -633,7 +904,417 @@ public class App {
     }
 
     public static void adminMenu(User user) {
+        int accountNumber;
+        int accountId;
+        User otherUser;
+        Account account;
+        Account otherAccount;
+        ArrayList<Account> accounts;
+        double amount;
+        String username;
+        String description;
 
+        char choice;
+        String option = " ";
+        char optionChar = Character.toUpperCase(option.charAt(0));
+        Scanner sc = new Scanner(System.in);
+        while (optionChar != 'Q' && optionChar != 'X') {
+            System.out.println("\n===== MAIN MENU ======\n" +
+                    "User-Account Management:\n" +
+                    "1 - View all accounts with a given status\n" +
+                    "2 - Approve an account\n" +
+                    "3 - Deny an account\n" +
+                    "4 - View an account\n" +
+                    "5 - Edit an account\n" +
+                    "\n" +
+                    "User Management:\n" +
+                    "6 - View all accounts for a user\n" +
+                    "7 - View a user's information\n" +
+                    "8 - Access a user's account menu\n" +
+                    "9 - Delete a user's account\n" +
+                    "\n" +
+                    "Account-Transaction Management:\n" +
+                    "A - Apply for a new account\n" +
+                    "U - View user information\n" +
+                    "I - Edit user information\n" +
+                    "V - View your accounts\n" +
+                    "P - Print list of transactions for one of your accounts\n" +
+                    "E - Edit one of your accounts\n" +
+                    "D - Deposit into an account\n" +
+                    "W - Withdraw from an account\n" +
+                    "T - Transfer money to another account\n" +
+                    "Q - Quit and save user login\n" +
+                    "X - Log out and exit\n");
+            System.out.print("Please select an option: ");
+            option = sc.next();
+            sc.nextLine();
+            if (option.length() > 1) {
+                option = " ";
+            }
+            optionChar = Character.toUpperCase(option.charAt(0));
+            switch (optionChar) {
+                case '1':
+                    System.out.println("1 - View PENDING_APPROVAL accounts\n" +
+                            "2 - View ACTIVE accounts\n" +
+                            "3 - View DENIED accounts\n" +
+                            "4 - View CANCELLED accounts\n");
+                    System.out.print("Please select an option: ");
+                    choice = sc.next().charAt(0);
+                    if (choice == '1') {
+                        accounts = accountDAO.getAllAccountsOfType(AccountStatus.PENDING_APPROVAL);
+                    } else if (choice == '2') {
+                        accounts = accountDAO.getAllAccountsOfType(AccountStatus.ACTIVE);
+                    } else if (choice == '3') {
+                        accounts = accountDAO.getAllAccountsOfType(AccountStatus.DENIED);
+                    } else if (choice == '4') {
+                        accounts = accountDAO.getAllAccountsOfType(AccountStatus.CANCELLED);
+                    } else {
+                        System.out.println("Invalid option.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    for (Account a : accounts) {
+                        System.out.println(a);
+                    }
+                    break;
+                case '2':
+                    System.out.println("Please enter the account_id of the account you would like to approve:");
+                    accountId = sc.nextInt();
+                    account = accountDAO.getAccount(accountId);
+                    if (account == null) {
+                        System.out.println("Account with account_id \""+accountId+"\" could not be found\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    try {
+                        visitor.approveAccount(account);
+                    } catch (UnauthorizedException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case '3':
+                    System.out.println("Please enter the account_id of the account you would like to approve:");
+                    accountId = sc.nextInt();
+                    account = accountDAO.getAccount(accountId);
+                    if (account == null) {
+                        System.out.println("Account with account_id \""+accountId+"\" could not be found\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    try {
+                        visitor.denyAccount(account);
+                    } catch (UnauthorizedException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case '4':
+                    System.out.print("Please enter the account_id of the account you would like to view: ");
+                    accountId = sc.nextInt();
+                    account = accountDAO.getAccount(accountId);
+                    if (account == null) {
+                        System.out.println("Account with account_id \""+accountId+"\" could not be found\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println(account);
+                    break;
+                case '5':
+                    System.out.print("Please enter the account_id of the account you would like to edit: ");
+                    accountId = sc.nextInt();
+                    account = accountDAO.getAccount(accountId);
+                    if (account == null) {
+                        System.out.println("Account with account_id \""+accountId+"\" could not be found\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("What would you like to do?\n" +
+                            "1 - Edit account status, account balance, and account description\n" +
+                            "2 - Delete account (WARNING: THIS WILL DELETE ALL ACCOUNT AND RELATED TRANSACTIONS)\n");
+                    System.out.println("Please select an option: ");
+                    choice = sc.next().charAt(0);
+                    if (choice == '1') {
+                        System.out.println("Enter new account status (PENDING_APPROVAL, ACTIVE, DENIED, CANCELLED)");
+                        account.setStatus(AccountStatus.valueOf(sc.next()));
+                        System.out.println("Enter new account balance:");
+                        try {
+                            account.setBalance(sc.nextDouble());
+                        } catch (NegativeBalanceException e) {
+                            System.out.println(e.getMessage());
+                            break;
+                        }
+                        System.out.println("Enter new account description:");
+                        account.setDescription(sc.nextLine());
+                        accountDAO.updateAccount(account);
+                    }
+                    if (choice == '2') {
+                        accountDAO.deleteAccount(account);
+                    }
+                    break;
+                case '6':
+                    System.out.println("Please enter the username of the user you would like to view:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    otherUser.printAccounts();
+                    break;
+                case '7':
+                    System.out.println("Please enter the username of the user you would like to view:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    otherUser.printUserInfo();
+                    break;
+                case '8':
+                    System.out.println("Please enter the username of the user you would like to manage:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.printf("Entering the account management menu for %s \"%s\"", otherUser.getRole(), otherUser.getUsername());
+                    adminAccessMenu(otherUser);
+                    break;
+                case '9':
+                    System.out.println("Please enter the username of the user you would like to delete:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    otherUser.printUserInfo();
+                    System.out.println("WARNING: DELETING A USER WILL ALSO DELETE ALL THE USER ACCOUNTS AND ALL RELATED TRANSACTIONS\n" +
+                            "ARE YOU SURE?\n" +
+                            "1 - Yes, I want to delete the user and all accounts and transactions made by the user\n" +
+                            "2 - No, take me back to the main menu");
+                    choice = sc.next().charAt(0);
+                    if (choice == '1') {
+                        userDAO.deleteUser(otherUser);
+                    }
+                    break;
+                case 'A':
+                    System.out.println("What type of account do you want to apply for?\n" +
+                            "P - Personal account\n" +
+                            "J - Joint account\n");
+                    System.out.print("Option: ");
+                    choice = Character.toUpperCase(sc.next().charAt(0));
+                    System.out.println("How much money will you deposit for your starting balance?");
+                    double startingBalance = sc.nextDouble();
+                    if (choice == 'P') {
+                        try {
+                            user.applyForAccount(startingBalance);
+                        } catch (InvalidAmountException e) {
+                            System.out.println(e.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (choice == 'J') {
+                        System.out.println("What is the username of the other owner of the account?");
+                        username = sc.next();
+                        otherUser = userDAO.getUser(username);
+                        if (otherUser == null) {
+                            System.out.println("User \""+username+"\" was not found.\n" +
+                                    "Returning to main menu...\n");
+                            break;
+                        } else if (user.getUsername().equals(otherUser.getUsername())) {
+                            System.out.println("Other user cannot be yourself.\n" +
+                                    "Returning to main menu...\n");
+                            break;
+                        }
+                        try {
+                            user.applyForJointAccount(startingBalance, otherUser);
+                        } catch (InvalidAmountException e) {
+                            System.out.println(e.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 'U':
+                    user.printUserInfo();
+                    break;
+                case 'I':
+                    System.out.println("=== Editing personal user information ===");
+                    System.out.print("Please enter your first name: ");
+                    user.setFirstName(sc.nextLine());
+                    System.out.print("Please enter your last name: ");
+                    user.setLastName(sc.nextLine());
+                    System.out.print("Please enter your email: ");
+                    user.setEmail(sc.nextLine());
+                    System.out.print("Please enter your phone number: ");
+                    user.setPhone(sc.nextLine());
+                    System.out.print("Please enter your address: ");
+                    user.setAddress(sc.nextLine());
+                    userDAO.updateUser(user);
+                    break;
+                case 'V':
+                    user.printAccounts();
+                    break;
+                case 'P':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to view?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    account.printTransactions();
+                    break;
+                case 'E':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to edit?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("Enter a new description for Account "+accountNumber);
+                    description = sc.nextLine();
+                    account.setDescription(description);
+                    accountDAO.updateAccount(account);
+                    break;
+                case 'D':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to deposit to?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to deposit?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a deposit description:");
+                    description = sc.nextLine();
+                    try {
+                        account.deposit(amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'W':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to withdraw from?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to withdraw?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a withdraw description:");
+                    description = sc.nextLine();
+                    try {
+                        account.withdraw(amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'T':
+                    if (user.getAccounts().size() == 0) {
+                        System.out.println("No accounts found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account do you want to transfer from?");
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in your accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    account = user.getAccount(accountNumber);
+                    System.out.println("Please enter the username of the user you would like to transfer to:");
+                    username = sc.next();
+                    otherUser = userDAO.getUser(username);
+                    if (otherUser == null) {
+                        System.out.println("User \""+username+"\" was not found.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    } else if (otherUser.getAccounts().size() == 0) {
+                        System.out.println("User \""+username+"\" has no accounts to transfer to\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    System.out.println("Which account would you like to transfer to?");
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    accountNumber = sc.nextInt();
+                    if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
+                        System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    otherAccount = user.getAccount(accountNumber);
+                    System.out.println("How much would you like to transfer?");
+                    amount = sc.nextDouble();
+                    System.out.println("Please enter a transfer description:");
+                    description = sc.nextLine();
+                    try {
+                        account.transfer(otherAccount, amount, description);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 'Q':
+                    System.out.println("Quitting Simple Bank System...\nUser login will be saved for next session");
+                    try {
+                        FileOutputStream file = new FileOutputStream("./src/main/resources/user.obj");
+                        ObjectOutputStream outStream = new ObjectOutputStream(file);
+                        outStream.writeObject(visitor);
+                        outStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 'X':
+                    System.out.println("Logging out...");
+                    File file = new File("./src/main/resources/user.obj");
+                    file.deleteOnExit();
+                    break;
+                default:
+                    System.out.println("Invalid option");
+                    break;
+            }
+        }
     }
     public static void main(String[] args) {
         try {
