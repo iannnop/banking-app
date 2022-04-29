@@ -136,7 +136,7 @@ public class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", address='" + address + '\'' +
-                ", accounts=" + accounts +
+                ", accounts=" + accounts.size() +
                 '}';
     }
 
@@ -186,7 +186,11 @@ public class User implements Serializable {
         if (role.compareTo(UserRole.EMPLOYEE) < 0) {
             throw new UnauthorizedException("User not authorized to approve accounts");
         }
+        if (role == UserRole.EMPLOYEE && account.getStatus() != AccountStatus.PENDING_APPROVAL) {
+            throw new UnauthorizedException("User is not authorized to change the status of an account that is not pending");
+        }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
+
 
         account.setStatus(AccountStatus.ACTIVE);
         accountDAO.updateAccount(account);
@@ -194,6 +198,9 @@ public class User implements Serializable {
     public void denyAccount(Account account) throws UnauthorizedException {
         if (role.compareTo(UserRole.EMPLOYEE) < 0) {
             throw new UnauthorizedException("User not authorized to deny accounts");
+        }
+        if (role == UserRole.EMPLOYEE && account.getStatus() != AccountStatus.PENDING_APPROVAL) {
+            throw new UnauthorizedException("User is not authorized to change the status of an account that is not pending");
         }
         AccountDAOImpl accountDAO = new AccountDAOImpl();
 
