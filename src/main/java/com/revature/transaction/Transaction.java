@@ -37,7 +37,7 @@ public class Transaction implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    public Timestamp getTimestamp() {
+    public Timestamp getTransactionCreated() {
         return transactionCreated;
     }
     public int getSenderId() {
