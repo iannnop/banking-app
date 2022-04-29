@@ -145,6 +145,7 @@ public class Account implements Serializable {
             throw new NegativeBalanceException("ERROR: Transfer amount is greater than available balance");
         }
 
+        AccountDAOImpl accountDAO = new AccountDAOImpl();
         TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
 
         Transaction transaction = transactionDAO.createTransaction(id, receiver.id, amount, TransactionType.TRANSFER, description);
@@ -154,5 +155,8 @@ public class Account implements Serializable {
         receiver.setBalance(receiver.getBalance()+amount);
         List<Transaction> receiverTransactions = receiver.getTransactions();
         receiverTransactions.add(transaction);
+
+        accountDAO.updateAccount(this);
+        accountDAO.updateAccount(receiver);
     }
 }
