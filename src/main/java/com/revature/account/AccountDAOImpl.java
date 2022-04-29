@@ -28,7 +28,6 @@ public class AccountDAOImpl implements AccountDAO {
 
                 account = new Account(id, accountCreated, status, balance, description);
             }
-            //TODO Set up message for account not found
 
         } catch (Exception e) {
             //TODO set up log4j logging
@@ -36,6 +35,35 @@ public class AccountDAOImpl implements AccountDAO {
         }
 
         return account;
+    }
+
+    @Override
+    public ArrayList<Account> getAllAccountsOfType(AccountStatus status) {
+        Connection connection = ConnectionManager.getConnection();
+
+        ArrayList<Account> accounts = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM \"UserAccount\" INNER JOIN \"Account\" " +
+                    "ON \"Account\".id = account_id WHERE status = ?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, String.valueOf(status));
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                Timestamp accountCreated = rs.getTimestamp("account_created");
+                double balance = rs.getDouble("balance");
+                String description = rs.getString("description");
+
+                accounts.add(new Account(id, accountCreated, status, balance, description));
+            }
+
+        } catch (Exception e) {
+            //TODO set up log4j logging
+            e.printStackTrace();
+        }
+
+        return accounts;
     }
 
     @Override
