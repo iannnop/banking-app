@@ -67,7 +67,10 @@ public class Account implements Serializable {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(double balance) throws NegativeBalanceException {
+        if (balance < 0) {
+            throw new NegativeBalanceException("Balance cannot be less than 0");
+        }
         this.balance = balance;
     }
 
