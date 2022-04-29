@@ -6,6 +6,8 @@ import com.revature.exception.NegativeBalanceException;
 import com.revature.transaction.Transaction;
 import com.revature.transaction.TransactionDAOImpl;
 import com.revature.transaction.TransactionType;
+import com.revature.user.User;
+import com.revature.user.UserDAOImpl;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -92,7 +94,7 @@ public class Account implements Serializable {
                 ", status=" + status +
                 ", balance=" + balance +
                 ", description='" + description + '\'' +
-                ", transactions=" + transactions +
+                ", transactions=" + transactions.size() +
                 '}';
     }
 
@@ -158,5 +160,39 @@ public class Account implements Serializable {
 
         accountDAO.updateAccount(this);
         accountDAO.updateAccount(receiver);
+    }
+
+    public void printTransactions() {
+        UserDAOImpl userDAO = new UserDAOImpl();
+
+        System.out.printf("LIST OF ALL TRANSACTIONS FOR ACCOUNT WITH account_id: %d%n", id);
+        System.out.printf("======================================%n");
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction transaction = transactions.get(i);
+            User sender = userDAO.getUser(transaction.getSenderId());
+            User receiver = userDAO.getUser(transaction.getReceiverId());
+            System.out.println("\nTRANSACTION " + i);
+            System.out.println("DESCRIPTION: " + transaction.getDescription()+"\n");
+            System.out.println("transaction_number: " + i);
+            System.out.println("transaction_id: " + transaction.getId());
+            System.out.println("transaction_created: " + transaction.getTransactionCreated());
+            if (sender == null) {
+                System.out.println("Personal deposit!");
+            } else {
+                System.out.println("sender_username: " + sender.getUsername());
+            }
+            System.out.println("sender_id: " + transaction.getSenderId());
+            if (receiver == null) {
+                System.out.println("Personal withdrawal!");
+            } else {
+                System.out.println("receiver_username: " + receiver.getUsername());
+            }
+            System.out.println("receiver_id: " + transaction.getReceiverId());
+            System.out.println("transaction_amount: " + transaction.getAmount());
+            System.out.println("transaction_type: " + transaction.getType());
+            System.out.printf("%n======================================%n");
+        }
+        System.out.println("Total number of transactions: " + transactions.size());
+        System.out.printf("END OF TRANSACTIONS REPORT FOR ACCOUNT WITH account_id: %d%n", id);
     }
 }
