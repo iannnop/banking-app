@@ -1327,9 +1327,9 @@ public class App {
             e.printStackTrace();
         }
 
-        if (visitor.getRole() == UserRole.CUSTOMER) {
+        if (visitor.getRole() == UserRole.ADMIN) {
             adminMenu(visitor);
-        } else if (visitor.getRole() == UserRole.ADMIN) {
+        } else if (visitor.getRole() == UserRole.EMPLOYEE) {
             employeeMenu(visitor);
         } else {
             customerMenu(visitor);
