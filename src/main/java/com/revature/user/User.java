@@ -211,6 +211,7 @@ public class User implements Serializable {
     public void printUserInfo() {
         System.out.printf("USER INFORMATION FOR %s \"%s\"%n", role, username);
         System.out.printf("======================================%n");
+        System.out.println("user_id: " + id);
         System.out.println("user_created: " + userCreated);
         System.out.println("First Name: " + firstName);
         System.out.println("Last Name: " + lastName);
@@ -225,6 +226,9 @@ public class User implements Serializable {
     public void printAccounts() {
         System.out.printf("LIST OF ALL ACCOUNTS FOR USER \"%s\"%n", username);
         System.out.printf("======================================%n");
+        if (accounts.size() == 0) {
+            System.out.println("\nNO ACCOUNTS FOUND");
+        }
         for (int i = 0; i < accounts.size(); i++) {
             Account account = accounts.get(i);
             System.out.println("\nACCOUNT " + i);
