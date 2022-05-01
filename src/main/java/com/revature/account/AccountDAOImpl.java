@@ -73,7 +73,8 @@ public class AccountDAOImpl implements AccountDAO {
         ArrayList<Account> accounts = new ArrayList<>();
         try {
             String sql = "SELECT * FROM \"UserAccount\" INNER JOIN \"Account\" " +
-                    "ON \"Account\".id = account_id WHERE user_id = ?";
+                    "ON \"Account\".id = account_id WHERE user_id = ?" +
+                    "ORDER BY account_id";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
