@@ -39,6 +39,7 @@ public class UserDAOImpl implements UserDAO {
 
         return user;
     }
+
     @Override
     public User getUser(String username) {
         Connection connection = ConnectionManager.getConnection();
@@ -71,6 +72,29 @@ public class UserDAOImpl implements UserDAO {
 
         return user;
     }
+
+    @Override
+    public User getUserFromAccount(int accountId) {
+        Connection connection = ConnectionManager.getConnection();
+
+        User user = null;
+        try {
+            String sql = "SELECT * FROM \"UserAccount\" WHERE account_id = ?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, accountId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                user = getUser(rs.getInt("user_id"));
+            }
+        } catch (Exception e) {
+            //TODO set up log4j logging
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
     @Override
     public User getCustomer(String username) {
         Connection connection = ConnectionManager.getConnection();
@@ -178,7 +202,7 @@ public class UserDAOImpl implements UserDAO {
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM \"User\"");
+            ResultSet rs = statement.executeQuery("SELECT * FROM \"User\" ORDER");
 
             while (rs.next()) {
                 int id = rs.getInt("id");
