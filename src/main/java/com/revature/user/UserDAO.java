@@ -6,6 +6,7 @@ public interface UserDAO {
 
     User getUser(int id);
     User getUser(String username);
+    User getUserFromAccount(int accountId);
     User getCustomer(String username);
     User getEmployee(String username);
     User getAdmin(String username);
