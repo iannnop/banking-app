@@ -1129,6 +1129,9 @@ public class App {
                             "2 - No, take me back to the main menu");
                     choice = sc.next().charAt(0);
                     if (choice == '1') {
+                        for (Account a : otherUser.getAccounts()) {
+                            accountDAO.deleteAccount(a);
+                        }
                         userDAO.deleteUser(otherUser);
                     }
                     break;
