@@ -47,7 +47,8 @@ public class TransactionDAOImpl implements TransactionDAO {
         try {
             String query = "SELECT * FROM \"Transaction\" " +
                     "INNER JOIN \"AccountTransaction\" ON \"Transaction\".id = \"AccountTransaction\".transaction_id " +
-                    "WHERE sender_id = ? OR receiver_id = ?";
+                    "WHERE sender_id = ? OR receiver_id = ?" +
+                    "ORDER BY transaction_id";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, accountId);
             statement.setInt(2, accountId);
