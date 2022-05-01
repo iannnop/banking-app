@@ -185,8 +185,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to view?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -202,8 +203,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to edit?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -222,8 +224,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -247,8 +250,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -272,8 +276,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -420,7 +425,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to view?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -438,7 +443,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to edit?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -459,7 +464,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -485,7 +490,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -511,7 +516,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -752,7 +757,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to view?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -770,7 +775,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to edit?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -791,7 +796,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -817,7 +822,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -843,7 +848,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -1193,7 +1198,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to view?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -1211,7 +1216,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to edit?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -1232,7 +1237,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -1258,7 +1263,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
@@ -1284,7 +1289,7 @@ public class App {
                     }
                     user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
-                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", user.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in your accounts.\n" +
