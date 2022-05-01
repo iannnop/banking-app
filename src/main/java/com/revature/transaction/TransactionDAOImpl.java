@@ -32,7 +32,6 @@ public class TransactionDAOImpl implements TransactionDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -66,7 +65,6 @@ public class TransactionDAOImpl implements TransactionDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 

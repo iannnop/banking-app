@@ -3,18 +3,21 @@ package com.revature;
 import com.revature.account.Account;
 import com.revature.account.AccountDAOImpl;
 import com.revature.account.AccountStatus;
-import com.revature.exception.InvalidAmountException;
 import com.revature.exception.NegativeBalanceException;
 import com.revature.exception.UnauthorizedException;
 import com.revature.user.UserDAOImpl;
 import com.revature.user.User;
 import com.revature.user.UserRole;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
+
+    private static final Logger logger = LogManager.getLogger(App.class);
 
     private static User visitor;
     private static final UserDAOImpl userDAO = new UserDAOImpl();
@@ -52,11 +55,13 @@ public class App {
                     visitor = userDAO.getUser(username);
                     if (visitor == null) {
                         System.out.println("User could not be found");
+                        logger.warn("Attempted login as "+username+", username not found.");
                         break;
                     }
                     if (!visitor.getPassword().equals(password)) {
                         System.out.println("Incorrect password");
                         visitor = null;
+                        logger.warn("Attempted login as "+username+", password incorrect.");
                         break;
                     }
                     break;
@@ -73,11 +78,13 @@ public class App {
                     System.out.print("Email: ");
                     email = sc.next();
                     visitor = userDAO.createUser(UserRole.CUSTOMER, username, password, firstName, lastName, email);
+                    logger.info("User \""+username+"\" successfully registered");
                     break;
                 case 'Q':
                     System.out.println("Shutting down...");
                     File file = new File("user.obj");
                     file.deleteOnExit();
+                    logger.info("Ending current session...");
                     System.exit(0);
                     break;
                 default:
@@ -85,6 +92,7 @@ public class App {
                     break;
             }
         }
+        logger.info("Successful login as "+visitor.getUsername()+". Welcome "+visitor.getFirstName()+"!");
         return visitor;
     }
     public static void adminAccessMenu(User user) {
@@ -130,10 +138,9 @@ public class App {
                     if (choice == 'P') {
                         try {
                             user.applyForAccount(startingBalance);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for an account for "+user.getUsername()+" with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for an account for "+user.getUsername()+" with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     } else if (choice == 'J') {
                         System.out.println("What is the username of the other owner of the account?");
@@ -144,16 +151,17 @@ public class App {
                                     "Returning to main menu...\n");
                             break;
                         } else if (user.getUsername().equals(otherUser.getUsername())) {
-                            System.out.println("Other user cannot be yourself.\n" +
+                            System.out.println("Other user cannot be the same.\n" +
                                     "Returning to main menu...\n");
+                            logger.warn(visitor.getUsername() + ": attempted to create a joint account for "+user.getUsername()+" with the same other user");
                             break;
                         }
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for a join account for " + user.getUsername() +
+                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account for"+ user.getUsername() +"with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     }
                     break;
@@ -175,6 +183,7 @@ public class App {
                     System.out.print("Address: ");
                     user.setAddress(sc.next());
                     userDAO.updateUser(user);
+                    logger.info(visitor.getUsername()+": updated personal user information for "+user.getUsername());
                     break;
                 case 'V':
                     user.printAccounts();
@@ -217,6 +226,7 @@ public class App {
                     description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
+                    logger.info(visitor.getUsername() + ": updated account description for "+user.getUsername()+"'s account with account_id " + account.getId());
                     break;
                 case 'D':
                     if (user.getAccounts().size() == 0) {
@@ -240,8 +250,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.deposit(amount, description);
+                        logger.info(visitor.getUsername() + ": deposited " + amount + " for "+user.getUsername() +" into account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to deposit for "+user.getUsername() + e.getMessage());
                     }
                     break;
                 case 'W':
@@ -266,8 +277,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.withdraw(amount, description);
+                        logger.info(visitor.getUsername() + ": withdrew " + amount + " for "+user.getUsername() +" into account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to withdraw for "+user.getUsername() + e.getMessage());
                     }
                     break;
                 case 'T':
@@ -313,12 +325,14 @@ public class App {
                     description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
+                        logger.info(visitor.getUsername()+": transferred "+amount+" for "+user.getUsername()+" to "+username+"'s account with account_id "+otherAccount.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to transfer for "+user.getUsername()+", "+e.getMessage());
                     }
                     break;
                 case 'X':
                     System.out.println("Exiting user menu for \""+user.getUsername()+"\"...");
+                    logger.info(visitor.getUsername()+": logging out of admin access menu for \""+user.getUsername()+"\"");
                     break;
                 default:
                     System.out.println("Invalid option");
@@ -370,10 +384,9 @@ public class App {
                     if (choice == 'P') {
                         try {
                             user.applyForAccount(startingBalance);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for an account with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for an account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     } else if (choice == 'J') {
                         System.out.println("What is the username of the other owner of the account?");
@@ -386,14 +399,15 @@ public class App {
                         } else if (user.getUsername().equals(otherUser.getUsername())) {
                             System.out.println("Other user cannot be yourself.\n" +
                                     "Returning to main menu...\n");
+                            logger.warn(visitor.getUsername() + ": attempted to create a joint account with self");
                             break;
                         }
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for a join account " +
+                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     }
                     break;
@@ -413,6 +427,7 @@ public class App {
                     System.out.print("Please enter your address: ");
                     user.setAddress(sc.next());
                     userDAO.updateUser(user);
+                    logger.info(visitor.getUsername()+": updated personal user information");
                     break;
                 case 'V':
                     user.printAccounts();
@@ -455,6 +470,7 @@ public class App {
                     description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
+                    logger.info(visitor.getUsername() + ": updated account description for account with account_id " + account.getId());
                     break;
                 case 'D':
                     if (user.getAccounts().size() == 0) {
@@ -478,8 +494,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.deposit(amount, description);
+                        logger.info(visitor.getUsername() + ": deposited " + amount + " into account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to deposit, " + e.getMessage());
                     }
                     break;
                 case 'W':
@@ -504,8 +521,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.withdraw(amount, description);
+                        logger.info(visitor.getUsername() + ": withdrew " + amount + " from account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to withdraw, " + e.getMessage());
                     }
                     break;
                 case 'T':
@@ -551,8 +569,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
+                        logger.info(visitor.getUsername()+": transferred "+amount+" to "+username+"'s account with account_id "+otherAccount.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to transfer, "+e.getMessage());
                     }
                     break;
                 case 'Q':
@@ -562,6 +581,7 @@ public class App {
                         ObjectOutputStream outStream = new ObjectOutputStream(file);
                         outStream.writeObject(visitor);
                         outStream.close();
+                        logger.info("Ending current session. User "+visitor.getUsername()+" will be saved on next login");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -570,6 +590,7 @@ public class App {
                     System.out.println("Logging out...");
                     File file = new File("./src/main/resources/user.obj");
                     file.deleteOnExit();
+                    logger.info("Logging out and ending current session...");
                     break;
                 default:
                     System.out.println("Invalid option");
@@ -643,12 +664,13 @@ public class App {
                     }
                     try {
                         visitor.approveAccount(account);
+                        logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
                     } catch (UnauthorizedException e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
                     break;
                 case '3':
-                    System.out.println("Please enter the account_id of the account you would like to approve:");
+                    System.out.println("Please enter the account_id of the account you would like to deny:");
                     accountId = sc.nextInt();
                     account = accountDAO.getAccount(accountId);
                     if (account == null) {
@@ -658,8 +680,9 @@ public class App {
                     }
                     try {
                         visitor.denyAccount(account);
+                        logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
                     } catch (UnauthorizedException e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
                     break;
                 case '4':
@@ -674,7 +697,7 @@ public class App {
                     System.out.println(account);
                     break;
                 case '6':
-                    System.out.println("Please enter the username of the user you would like to view:");
+                    System.out.println("Please enter the username of the user whose accounts you would like to view:");
                     username = sc.next();
                     otherUser = userDAO.getUser(username);
                     if (otherUser == null) {
@@ -706,10 +729,9 @@ public class App {
                     if (choice == 'P') {
                         try {
                             user.applyForAccount(startingBalance);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for an account with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for an account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     } else if (choice == 'J') {
                         System.out.println("What is the username of the other owner of the account?");
@@ -722,14 +744,15 @@ public class App {
                         } else if (user.getUsername().equals(otherUser.getUsername())) {
                             System.out.println("Other user cannot be yourself.\n" +
                                     "Returning to main menu...\n");
+                            logger.warn(visitor.getUsername() + ": attempted to create a joint account with self");
                             break;
                         }
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for a join account " +
+                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     }
                     break;
@@ -749,6 +772,7 @@ public class App {
                     System.out.print("Please enter your address: ");
                     user.setAddress(sc.next());
                     userDAO.updateUser(user);
+                    logger.info(visitor.getUsername()+": updated personal user information");
                     break;
                 case 'V':
                     user.printAccounts();
@@ -791,6 +815,7 @@ public class App {
                     description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
+                    logger.info(visitor.getUsername() + ": updated account description for account with account_id " + account.getId());
                     break;
                 case 'D':
                     if (user.getAccounts().size() == 0) {
@@ -814,8 +839,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.deposit(amount, description);
+                        logger.info(visitor.getUsername() + ": deposited " + amount + " into account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to deposit, " + e.getMessage());
                     }
                     break;
                 case 'W':
@@ -840,8 +866,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.withdraw(amount, description);
+                        logger.info(visitor.getUsername() + ": withdrew " + amount + " from account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to withdraw, " + e.getMessage());
                     }
                     break;
                 case 'T':
@@ -887,8 +914,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
+                        logger.info(visitor.getUsername()+": transferred "+amount+" to "+username+"'s account with account_id "+otherAccount.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to transfer, "+e.getMessage());
                     }
                     break;
                 case 'Q':
@@ -898,6 +926,7 @@ public class App {
                         ObjectOutputStream outStream = new ObjectOutputStream(file);
                         outStream.writeObject(visitor);
                         outStream.close();
+                        logger.info("Ending current session. User "+visitor.getUsername()+" will be saved on next login");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -906,6 +935,7 @@ public class App {
                     System.out.println("Logging out...");
                     File file = new File("./src/main/resources/user.obj");
                     file.deleteOnExit();
+                    logger.info("Logging out and ending current session...");
                     break;
                 default:
                     System.out.println("Invalid option");
@@ -1003,8 +1033,9 @@ public class App {
                     }
                     try {
                         visitor.approveAccount(account);
+                        logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
                     } catch (UnauthorizedException e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
                     break;
                 case '2':
@@ -1018,8 +1049,9 @@ public class App {
                     }
                     try {
                         visitor.denyAccount(account);
+                        logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
                     } catch (UnauthorizedException e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
                     break;
                 case '3':
@@ -1033,8 +1065,9 @@ public class App {
                     }
                     try {
                         visitor.cancelAccount(account);
+                        logger.info(visitor.getUsername() + ": cancelled account with account_id "+account.getId());
                     } catch (UnauthorizedException e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername()+": failed attempt to cancel account with account_id "+account.getId()+", "+e.getMessage());
                     }
                     break;
                 case '4':
@@ -1069,22 +1102,24 @@ public class App {
                         try {
                             account.setBalance(sc.nextDouble());
                         } catch (NegativeBalanceException e) {
-                            System.out.println(e.getMessage());
+                            logger.warn(visitor.getUsername()+": failed to change balance of account with account_id "+account.getId()+", "+e.getMessage());
                             break;
                         }
                         System.out.println("Enter new account description:");
                         account.setDescription(sc.next());
                         accountDAO.updateAccount(account);
+                        logger.info(visitor.getUsername()+": updated account for account with account_id "+account.getId());
                     }
                     if (choice == '2') {
                         accountDAO.deleteAccount(account);
+                        logger.info(visitor.getUsername()+": deleted account with "+account.getId()+" and all related transactions");
                     } else {
                         System.out.println("Invalid option\n" +
                                 "Returning to main menu...\n");
                     }
                     break;
                 case '6':
-                    System.out.println("Please enter the username of the user you would like to view:");
+                    System.out.println("Please enter the username of the user whose accounts you would like to view:");
                     username = sc.next();
                     otherUser = userDAO.getUser(username);
                     if (otherUser == null) {
@@ -1115,6 +1150,7 @@ public class App {
                         break;
                     }
                     System.out.printf("Entering the account management menu for %s \"%s\"", otherUser.getRole(), otherUser.getUsername());
+                    logger.info(visitor.getUsername()+": accessing account management menu for USER \""+otherUser.getUsername()+"\"");
                     adminAccessMenu(otherUser);
                     break;
                 case '9':
@@ -1135,8 +1171,13 @@ public class App {
                     if (choice == '1') {
                         for (Account a : otherUser.getAccounts()) {
                             accountDAO.deleteAccount(a);
+                            logger.info(visitor.getUsername()+": deleted account with account_id "+a.getId());
                         }
                         userDAO.deleteUser(otherUser);
+                        logger.info(visitor.getUsername()+": deleted "+otherUser.getRole()+" "+otherUser.getUsername());
+                    } else {
+                        System.out.println("Canceling user deletion process\n" +
+                                "Returning to main menu...\n");
                     }
                     break;
                 case 'A':
@@ -1150,10 +1191,9 @@ public class App {
                     if (choice == 'P') {
                         try {
                             user.applyForAccount(startingBalance);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for an account with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for an account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     } else if (choice == 'J') {
                         System.out.println("What is the username of the other owner of the account?");
@@ -1166,14 +1206,15 @@ public class App {
                         } else if (user.getUsername().equals(otherUser.getUsername())) {
                             System.out.println("Other user cannot be yourself.\n" +
                                     "Returning to main menu...\n");
+                            logger.warn(visitor.getUsername() + ": attempted to create a joint account with self");
                             break;
                         }
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
-                        } catch (InvalidAmountException e) {
-                            System.out.println(e.getMessage());
+                            logger.info(visitor.getUsername() + ": applied for a join account " +
+                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
                     }
                     break;
@@ -1193,6 +1234,7 @@ public class App {
                     System.out.print("Please enter your address: ");
                     user.setAddress(sc.next());
                     userDAO.updateUser(user);
+                    logger.info(visitor.getUsername()+": updated personal user information");
                     break;
                 case 'V':
                     user.printAccounts();
@@ -1235,6 +1277,7 @@ public class App {
                     description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
+                    logger.info(visitor.getUsername() + ": updated account description for account with account_id " + account.getId());
                     break;
                 case 'D':
                     if (user.getAccounts().size() == 0) {
@@ -1254,13 +1297,13 @@ public class App {
                     account = user.getAccount(accountNumber);
                     System.out.println("How much would you like to deposit?");
                     amount = sc.nextDouble();
-                    sc.next();
                     System.out.println("Please enter a deposit description:");
                     description = sc.next();
                     try {
                         account.deposit(amount, description);
+                        logger.info(visitor.getUsername() + ": deposited " + amount + " into account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to deposit, " + e.getMessage());
                     }
                     break;
                 case 'W':
@@ -1285,8 +1328,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.withdraw(amount, description);
+                        logger.info(visitor.getUsername() + ": withdrew " + amount + " from account with account_id " + account.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to withdraw, " + e.getMessage());
                     }
                     break;
                 case 'T':
@@ -1317,7 +1361,6 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
-                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
                     System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1333,8 +1376,9 @@ public class App {
                     description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
+                        logger.info(visitor.getUsername()+": transferred "+amount+" to "+username+"'s account with account_id "+otherAccount.getId());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.warn(visitor.getUsername() + ": failed attempt to transfer, "+e.getMessage());
                     }
                     break;
                 case 'Q':
@@ -1344,6 +1388,7 @@ public class App {
                         ObjectOutputStream outStream = new ObjectOutputStream(file);
                         outStream.writeObject(visitor);
                         outStream.close();
+                        logger.info("Ending current session. User "+visitor.getUsername()+" will be saved on next login");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1352,6 +1397,7 @@ public class App {
                     System.out.println("Logging out...");
                     File file = new File("./src/main/resources/user.obj");
                     file.deleteOnExit();
+                    logger.info("Logging out and ending current session...");
                     break;
                 default:
                     System.out.println("Invalid option");
@@ -1366,6 +1412,7 @@ public class App {
             visitor = (User) inStream.readObject();
             visitor = userDAO.getUser(visitor.getId());
             inStream.close();
+            logger.info("Resuming session as \""+visitor.getUsername()+"\"");
             System.out.printf("Welcome back, %s!%n", visitor.getUsername());
         } catch (FileNotFoundException e) {
             visitor = login();

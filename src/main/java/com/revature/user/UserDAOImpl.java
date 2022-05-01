@@ -33,7 +33,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -66,7 +65,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -88,7 +86,6 @@ public class UserDAOImpl implements UserDAO {
                 user = getUser(rs.getInt("user_id"));
             }
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -121,7 +118,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -155,7 +151,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -188,7 +183,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -221,7 +215,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -254,7 +247,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -287,7 +279,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -320,7 +311,6 @@ public class UserDAOImpl implements UserDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 

@@ -30,7 +30,6 @@ public class AccountDAOImpl implements AccountDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -59,7 +58,6 @@ public class AccountDAOImpl implements AccountDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
@@ -90,7 +88,6 @@ public class AccountDAOImpl implements AccountDAO {
             }
 
         } catch (Exception e) {
-            //TODO set up log4j logging
             e.printStackTrace();
         }
 
