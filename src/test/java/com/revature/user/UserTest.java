@@ -34,18 +34,26 @@ public class UserTest {
 
         assertEquals(user, createdUser);
     }
-
     @Test
-    public void getCustomer() {
+    public void getUserById() {
         User user = new User(1, UserRole.CUSTOMER, "daniel", "123456",
                 new Timestamp(System.currentTimeMillis()), "Daniel", "Ray", "daniel@email.com");
 
         UserDAOImpl userDAO = mock(UserDAOImpl.class);
-        when(userDAO.getCustomer("daniel")).thenReturn(user);
+        when(userDAO.getUser(1)).thenReturn(user);
 
-        assertEquals(user, userDAO.getCustomer("daniel"));
+        assertEquals(user, userDAO.getUser(1));
     }
+    @Test
+    public void getUserByUsername() {
+        User user = new User(1, UserRole.CUSTOMER, "daniel", "123456",
+                new Timestamp(System.currentTimeMillis()), "Daniel", "Ray", "daniel@email.com");
 
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
+        when(userDAO.getUser("daniel")).thenReturn(user);
+
+        assertEquals(user, userDAO.getUser("daniel"));
+    }
     @Test
     public void getAllUsers() {
         User userOne = new User(
