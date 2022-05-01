@@ -30,6 +30,7 @@ public class App {
 
         String option;
         Scanner sc = new Scanner(System.in);
+        sc.useDelimiter("\n");
         System.out.println("Hello!\nPlease log in or register for an account");
         while (visitor == null) {
             System.out.println("\n===== LOGIN MENU ======\n" +
@@ -38,7 +39,6 @@ public class App {
                     "Q - Quit\n");
             System.out.print("Please select an option: ");
             option = sc.next();
-            sc.nextLine();
             if (option.length() > 1)
                 option = " ";
             System.out.println();
@@ -99,6 +99,7 @@ public class App {
         String option = " ";
         char optionChar = Character.toUpperCase(option.charAt(0));
         Scanner sc = new Scanner(System.in);
+        sc.useDelimiter("\n");
         while (optionChar != 'X') {
             System.out.println("\n===== MAIN MENU FOR USER \""+user.getUsername()+"\" ======\n" +
                     "A - Apply for a new account\n" +
@@ -113,7 +114,6 @@ public class App {
                     "X - Exit user menu\n");
             System.out.print("Please select an option: ");
             option = sc.next();
-            sc.nextLine();
             if (option.length() > 1) {
                 option = " ";
             }
@@ -165,15 +165,15 @@ public class App {
                     System.out.print("Role (CUSTOMER, EMPLOYEE, ADMIN): ");
                     user.setRole(UserRole.valueOf(sc.next()));
                     System.out.print("First name: ");
-                    user.setFirstName(sc.nextLine());
+                    user.setFirstName(sc.next());
                     System.out.print("Last name: ");
-                    user.setLastName(sc.nextLine());
+                    user.setLastName(sc.next());
                     System.out.print("Email: ");
-                    user.setEmail(sc.nextLine());
+                    user.setEmail(sc.next());
                     System.out.print("Phone: ");
-                    user.setPhone(sc.nextLine());
+                    user.setPhone(sc.next());
                     System.out.print("Address: ");
-                    user.setAddress(sc.nextLine());
+                    user.setAddress(sc.next());
                     userDAO.updateUser(user);
                     break;
                 case 'V':
@@ -214,7 +214,7 @@ public class App {
                     }
                     account = user.getAccount(accountNumber);
                     System.out.println("Enter a new description for Account "+accountNumber);
-                    description = sc.nextLine();
+                    description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
                     break;
@@ -237,7 +237,7 @@ public class App {
                     System.out.println("How much would you like to deposit?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a deposit description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.deposit(amount, description);
                     } catch (Exception e) {
@@ -263,7 +263,7 @@ public class App {
                     System.out.println("How much would you like to withdraw?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a withdraw description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.withdraw(amount, description);
                     } catch (Exception e) {
@@ -310,7 +310,7 @@ public class App {
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
                     } catch (Exception e) {
@@ -338,6 +338,7 @@ public class App {
         String option = " ";
         char optionChar = Character.toUpperCase(option.charAt(0));
         Scanner sc = new Scanner(System.in);
+        sc.useDelimiter("\n");
         while (optionChar != 'Q' && optionChar != 'X') {
             System.out.println("\n===== MAIN MENU ======\n" +
                     "A - Apply for a new account\n" +
@@ -353,7 +354,6 @@ public class App {
                     "X - Log out and exit\n");
             System.out.print("Please select an option: ");
             option = sc.next();
-            sc.nextLine();
             if (option.length() > 1) {
                 option = " ";
             }
@@ -403,15 +403,15 @@ public class App {
                 case 'I':
                     System.out.println("=== Editing personal user information ===");
                     System.out.print("Please enter your first name: ");
-                    user.setFirstName(sc.nextLine());
+                    user.setFirstName(sc.next());
                     System.out.print("Please enter your last name: ");
-                    user.setLastName(sc.nextLine());
+                    user.setLastName(sc.next());
                     System.out.print("Please enter your email: ");
-                    user.setEmail(sc.nextLine());
+                    user.setEmail(sc.next());
                     System.out.print("Please enter your phone number: ");
-                    user.setPhone(sc.nextLine());
+                    user.setPhone(sc.next());
                     System.out.print("Please enter your address: ");
-                    user.setAddress(sc.nextLine());
+                    user.setAddress(sc.next());
                     userDAO.updateUser(user);
                     break;
                 case 'V':
@@ -452,7 +452,7 @@ public class App {
                     }
                     account = user.getAccount(accountNumber);
                     System.out.println("Enter a new description for Account "+accountNumber);
-                    description = sc.nextLine();
+                    description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
                     break;
@@ -475,7 +475,7 @@ public class App {
                     System.out.println("How much would you like to deposit?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a deposit description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.deposit(amount, description);
                     } catch (Exception e) {
@@ -501,7 +501,7 @@ public class App {
                     System.out.println("How much would you like to withdraw?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a withdraw description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.withdraw(amount, description);
                     } catch (Exception e) {
@@ -548,7 +548,7 @@ public class App {
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
                     } catch (Exception e) {
@@ -590,6 +590,7 @@ public class App {
         String option = " ";
         char optionChar = Character.toUpperCase(option.charAt(0));
         Scanner sc = new Scanner(System.in);
+        sc.useDelimiter("\n");
         while (optionChar != 'Q' && optionChar != 'X') {
             System.out.println("\n===== MAIN MENU ======\n" +
                     "Account Management:\n" +
@@ -616,7 +617,6 @@ public class App {
                     "X - Log out and exit\n");
             System.out.print("Please select an option: ");
             option = sc.next();
-            sc.nextLine();
             if (option.length() > 1) {
                 option = " ";
             }
@@ -624,6 +624,10 @@ public class App {
             switch (optionChar) {
                 case '1':
                     ArrayList<Account> pendingAccounts = accountDAO.getAllAccountsOfType(AccountStatus.PENDING_APPROVAL);
+                    if (pendingAccounts.size() == 0) {
+                        System.out.println("NO PENDING ACCOUNTS FOUND\n" +
+                                "Returning to main menu...\n");
+                    }
                     for (Account a : pendingAccounts) {
                         System.out.println(a);
                     }
@@ -735,15 +739,15 @@ public class App {
                 case 'I':
                     System.out.println("=== Editing personal user information ===");
                     System.out.print("Please enter your first name: ");
-                    user.setFirstName(sc.nextLine());
+                    user.setFirstName(sc.next());
                     System.out.print("Please enter your last name: ");
-                    user.setLastName(sc.nextLine());
+                    user.setLastName(sc.next());
                     System.out.print("Please enter your email: ");
-                    user.setEmail(sc.nextLine());
+                    user.setEmail(sc.next());
                     System.out.print("Please enter your phone number: ");
-                    user.setPhone(sc.nextLine());
+                    user.setPhone(sc.next());
                     System.out.print("Please enter your address: ");
-                    user.setAddress(sc.nextLine());
+                    user.setAddress(sc.next());
                     userDAO.updateUser(user);
                     break;
                 case 'V':
@@ -784,7 +788,7 @@ public class App {
                     }
                     account = user.getAccount(accountNumber);
                     System.out.println("Enter a new description for Account "+accountNumber);
-                    description = sc.nextLine();
+                    description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
                     break;
@@ -807,7 +811,7 @@ public class App {
                     System.out.println("How much would you like to deposit?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a deposit description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.deposit(amount, description);
                     } catch (Exception e) {
@@ -833,7 +837,7 @@ public class App {
                     System.out.println("How much would you like to withdraw?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a withdraw description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.withdraw(amount, description);
                     } catch (Exception e) {
@@ -880,7 +884,7 @@ public class App {
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
                     } catch (Exception e) {
@@ -924,6 +928,7 @@ public class App {
         String option = " ";
         char optionChar = Character.toUpperCase(option.charAt(0));
         Scanner sc = new Scanner(System.in);
+        sc.useDelimiter("\n");
         while (optionChar != 'Q' && optionChar != 'X') {
             System.out.println("\n===== MAIN MENU ======\n" +
                     "User-Account Management:\n" +
@@ -954,7 +959,6 @@ public class App {
                     "X - Log out and exit\n");
             System.out.print("Please select an option: ");
             option = sc.next();
-            sc.nextLine();
             if (option.length() > 1) {
                 option = " ";
             }
@@ -1069,7 +1073,7 @@ public class App {
                             break;
                         }
                         System.out.println("Enter new account description:");
-                        account.setDescription(sc.nextLine());
+                        account.setDescription(sc.next());
                         accountDAO.updateAccount(account);
                     }
                     if (choice == '2') {
@@ -1179,15 +1183,15 @@ public class App {
                 case 'I':
                     System.out.println("=== Editing personal user information ===");
                     System.out.print("Please enter your first name: ");
-                    user.setFirstName(sc.nextLine());
+                    user.setFirstName(sc.next());
                     System.out.print("Please enter your last name: ");
-                    user.setLastName(sc.nextLine());
+                    user.setLastName(sc.next());
                     System.out.print("Please enter your email: ");
-                    user.setEmail(sc.nextLine());
+                    user.setEmail(sc.next());
                     System.out.print("Please enter your phone number: ");
-                    user.setPhone(sc.nextLine());
+                    user.setPhone(sc.next());
                     System.out.print("Please enter your address: ");
-                    user.setAddress(sc.nextLine());
+                    user.setAddress(sc.next());
                     userDAO.updateUser(user);
                     break;
                 case 'V':
@@ -1228,7 +1232,7 @@ public class App {
                     }
                     account = user.getAccount(accountNumber);
                     System.out.println("Enter a new description for Account "+accountNumber);
-                    description = sc.nextLine();
+                    description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
                     break;
@@ -1250,8 +1254,9 @@ public class App {
                     account = user.getAccount(accountNumber);
                     System.out.println("How much would you like to deposit?");
                     amount = sc.nextDouble();
+                    sc.next();
                     System.out.println("Please enter a deposit description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.deposit(amount, description);
                     } catch (Exception e) {
@@ -1277,7 +1282,7 @@ public class App {
                     System.out.println("How much would you like to withdraw?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a withdraw description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.withdraw(amount, description);
                     } catch (Exception e) {
@@ -1325,7 +1330,7 @@ public class App {
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
-                    description = sc.nextLine();
+                    description = sc.next();
                     try {
                         account.transfer(otherAccount, amount, description);
                     } catch (Exception e) {
