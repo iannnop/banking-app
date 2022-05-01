@@ -170,27 +170,30 @@ public class Account implements Serializable {
 
         System.out.printf("LIST OF ALL TRANSACTIONS FOR ACCOUNT WITH account_id: %d%n", id);
         System.out.printf("======================================%n");
+        if (transactions.size() == 0) {
+            System.out.println("\nNO TRANSACTIONS FOUND");
+        }
         for (int i = 0; i < transactions.size(); i++) {
             Transaction transaction = transactions.get(i);
-            User sender = userDAO.getUser(transaction.getSenderId());
-            User receiver = userDAO.getUser(transaction.getReceiverId());
+            User sender = userDAO.getUserFromAccount(transaction.getSenderId());
+            User receiver = userDAO.getUserFromAccount(transaction.getReceiverId());
             System.out.println("\nTRANSACTION " + i);
             System.out.println("DESCRIPTION: " + transaction.getDescription()+"\n");
             System.out.println("transaction_number: " + i);
             System.out.println("transaction_id: " + transaction.getId());
             System.out.println("transaction_created: " + transaction.getTransactionCreated());
+            System.out.println("sender_id: " + transaction.getSenderId());
             if (sender == null) {
                 System.out.println("Personal deposit!");
             } else {
                 System.out.println("sender_username: " + sender.getUsername());
             }
-            System.out.println("sender_id: " + transaction.getSenderId());
+            System.out.println("receiver_id: " + transaction.getReceiverId());
             if (receiver == null) {
                 System.out.println("Personal withdrawal!");
             } else {
                 System.out.println("receiver_username: " + receiver.getUsername());
             }
-            System.out.println("receiver_id: " + transaction.getReceiverId());
             System.out.println("transaction_amount: " + transaction.getAmount());
             System.out.println("transaction_type: " + transaction.getType());
             System.out.printf("%n======================================%n");
