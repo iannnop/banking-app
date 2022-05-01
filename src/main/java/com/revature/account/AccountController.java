@@ -41,11 +41,11 @@ public class AccountController {
         String id = ctx.pathParam("id");
         Account account = accountDAO.getAccount(Integer.parseInt(id));
         if (account == null) {
-            System.out.println("404 Not Found - Account with id \""+id+"\" does not exist");
+            System.out.println("404 Not Found - Account with account_id \""+id+"\" does not exist");
             ctx.status(404);
             return;
         }
-        System.out.println("200 OK - Account with id "+id+" found");
+        System.out.println("200 OK - Account with account_id "+id+" found");
         ctx.status(200).json(account);
     };
 
@@ -68,9 +68,10 @@ public class AccountController {
 
         double startingBalance = Double.parseDouble(ctx.req.getParameter("startingBalance"));
         user.applyForAccount(startingBalance);
+        Account account = user.getAccount(user.getAccounts().size()-1);
 
-        System.out.println("200 OK - Account created");
-        ctx.status(201).json(user);
+        System.out.println("200 OK - Account with account_id "+account.getId()+" created");
+        ctx.status(201).json(account);
     };
 
     /*
