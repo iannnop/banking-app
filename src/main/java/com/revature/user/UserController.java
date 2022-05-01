@@ -83,6 +83,11 @@ public class UserController {
         String username = ctx.pathParam("username");
 
         User user = userDAO.getUser(username);
+        if (user == null) {
+            System.out.println("404 Not Found - User \""+username+"\" does not exist.");
+            ctx.status(404);
+            return;
+        }
 
         userDAO.deleteUser(user);
 
