@@ -6,7 +6,6 @@ import com.revature.account.AccountStatus;
 import com.revature.exception.InvalidAmountException;
 import com.revature.exception.NegativeBalanceException;
 import com.revature.exception.UnauthorizedException;
-import com.revature.transaction.TransactionDAOImpl;
 import com.revature.user.UserDAOImpl;
 import com.revature.user.User;
 import com.revature.user.UserRole;
@@ -20,7 +19,6 @@ public class App {
     private static User visitor;
     private static final UserDAOImpl userDAO = new UserDAOImpl();
     private static final AccountDAOImpl accountDAO = new AccountDAOImpl();
-    private static final TransactionDAOImpl transactionDAO = new TransactionDAOImpl();
 
     public static User login() {
         User visitor = null;
@@ -107,7 +105,7 @@ public class App {
                     "U - View user information\n" +
                     "I - Edit user information\n" +
                     "V - View "+user.getUsername()+"'s accounts\n" +
-                    "P - Print list of transactions for one of \""+user.getUsername()+"\"'s accounts\n" +
+                    "P - Print list of transactions for one of \""+user.getUsername()+"'s\" accounts\n" +
                     "E - Edit an account\n" +
                     "D - Deposit into an account\n" +
                     "W - Withdraw from an account\n" +
@@ -420,6 +418,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to view?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -437,6 +436,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to edit?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -457,6 +457,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -482,6 +483,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -507,6 +509,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -747,6 +750,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to view?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -764,6 +768,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to edit?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -784,6 +789,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -809,6 +815,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -834,6 +841,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -896,7 +904,6 @@ public class App {
             }
         }
     }
-
     public static void adminMenu(User user) {
         int accountNumber;
         int accountId;
@@ -915,9 +922,10 @@ public class App {
         while (optionChar != 'Q' && optionChar != 'X') {
             System.out.println("\n===== MAIN MENU ======\n" +
                     "User-Account Management:\n" +
-                    "1 - View all accounts with a given status\n" +
-                    "2 - Approve an account\n" +
-                    "3 - Deny an account\n" +
+                    "0 - View all accounts with a given status\n" +
+                    "1 - Approve an account\n" +
+                    "2 - Deny an account\n" +
+                    "3 - Cancel an account\n" +
                     "4 - View an account\n" +
                     "5 - Edit an account\n" +
                     "\n" +
@@ -947,7 +955,7 @@ public class App {
             }
             optionChar = Character.toUpperCase(option.charAt(0));
             switch (optionChar) {
-                case '1':
+                case '0':
                     System.out.println("1 - View PENDING_APPROVAL accounts\n" +
                             "2 - View ACTIVE accounts\n" +
                             "3 - View DENIED accounts\n" +
@@ -967,11 +975,15 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    if (accounts.size() == 0) {
+                        System.out.println("NO ACCOUNTS FOUND\n" +
+                                "Returning to main menu...\n");
+                    }
                     for (Account a : accounts) {
                         System.out.println(a);
                     }
                     break;
-                case '2':
+                case '1':
                     System.out.println("Please enter the account_id of the account you would like to approve:");
                     accountId = sc.nextInt();
                     account = accountDAO.getAccount(accountId);
@@ -986,7 +998,7 @@ public class App {
                         System.out.println(e.getMessage());
                     }
                     break;
-                case '3':
+                case '2':
                     System.out.println("Please enter the account_id of the account you would like to approve:");
                     accountId = sc.nextInt();
                     account = accountDAO.getAccount(accountId);
@@ -997,6 +1009,21 @@ public class App {
                     }
                     try {
                         visitor.denyAccount(account);
+                    } catch (UnauthorizedException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case '3':
+                    System.out.println("Please enter the account_id of the account you would like to cancel:");
+                    accountId = sc.nextInt();
+                    account = accountDAO.getAccount(accountId);
+                    if (account == null) {
+                        System.out.println("Account with account_id \""+accountId+"\" could not be found\n" +
+                                "Returning to main menu...\n");
+                        break;
+                    }
+                    try {
+                        visitor.cancelAccount(account);
                     } catch (UnauthorizedException e) {
                         System.out.println(e.getMessage());
                     }
@@ -1042,6 +1069,9 @@ public class App {
                     }
                     if (choice == '2') {
                         accountDAO.deleteAccount(account);
+                    } else {
+                        System.out.println("Invalid option\n" +
+                                "Returning to main menu...\n");
                     }
                     break;
                 case '6':
@@ -1161,6 +1191,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to view?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1178,6 +1209,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to edit?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1198,6 +1230,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to deposit to?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1223,6 +1256,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to withdraw from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1248,6 +1282,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    user.printAccounts();
                     System.out.println("Which account do you want to transfer from?");
                     System.out.printf("Account Number (0 - %d): ", user.getAccounts().size());
                     accountNumber = sc.nextInt();
@@ -1269,6 +1304,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
                     System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
                     accountNumber = sc.nextInt();
