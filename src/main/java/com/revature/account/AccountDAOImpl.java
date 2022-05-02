@@ -15,7 +15,7 @@ public class AccountDAOImpl implements AccountDAO {
         try {
             String sql = "SELECT * FROM \"Account\" " +
                     "INNER JOIN \"UserAccount\" ON \"Account\".id = \"UserAccount\".account_id " +
-                    "WHERE \"Account\".id = ?";
+                    "WHERE account_id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -48,13 +48,17 @@ public class AccountDAOImpl implements AccountDAO {
             pstmt.setString(1, String.valueOf(status));
             ResultSet rs = pstmt.executeQuery();
 
+            ArrayList<Integer> addedAccounts = new ArrayList<>();
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("account_id");
                 Timestamp accountCreated = rs.getTimestamp("account_created");
                 double balance = rs.getDouble("balance");
                 String description = rs.getString("description");
 
-                accounts.add(new Account(id, accountCreated, status, balance, description));
+                if (!addedAccounts.contains(id)) {
+                    addedAccounts.add(id);
+                    accounts.add(new Account(id, accountCreated, status, balance, description));
+                }
             }
 
         } catch (Exception e) {
@@ -78,7 +82,7 @@ public class AccountDAOImpl implements AccountDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("user_id");
                 Timestamp accountCreated = rs.getTimestamp("account_created");
                 AccountStatus status = AccountStatus.valueOf(rs.getString("status"));
                 double balance = rs.getDouble("balance");
