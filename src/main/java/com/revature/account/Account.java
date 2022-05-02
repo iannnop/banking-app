@@ -102,7 +102,7 @@ public class Account implements Serializable {
     }
 
     public void deposit(double amount, String description) throws InvalidAmountException, AccountNotActiveException {
-        if (transactions.size() > 1 && status != AccountStatus.ACTIVE) {
+        if (transactions.size() >= 1 && status != AccountStatus.ACTIVE) {
             throw new AccountNotActiveException("ERROR: Cannot deposit to an account that is "+status);
         }
         if (amount <= 0) {
