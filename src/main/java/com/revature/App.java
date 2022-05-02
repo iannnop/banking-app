@@ -159,7 +159,7 @@ public class App {
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
                             logger.info(visitor.getUsername() + ": applied for a join account for " + user.getUsername() +
-                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
+                                    "with "+otherUser.getUsername()+" with a starting balance of " + startingBalance);
                         } catch (Exception e) {
                             logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account for"+ user.getUsername() +"with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
@@ -310,8 +310,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
-                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
@@ -405,7 +406,7 @@ public class App {
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
                             logger.info(visitor.getUsername() + ": applied for a join account " +
-                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
+                                    "with "+otherUser.getUsername()+" with a starting balance of " + startingBalance);
                         } catch (Exception e) {
                             logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
@@ -470,6 +471,7 @@ public class App {
                     description = sc.next();
                     account.setDescription(description);
                     accountDAO.updateAccount(account);
+                    visitor.getAccounts().set(accountNumber, account);
                     logger.info(visitor.getUsername() + ": updated account description for account with account_id " + account.getId());
                     break;
                 case 'D':
@@ -554,8 +556,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
-                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
@@ -665,6 +668,10 @@ public class App {
                     try {
                         visitor.approveAccount(account);
                         logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
+                        if (visitor.getAccounts().contains(account)) {
+                            int index = visitor.getAccounts().indexOf(account);
+                            visitor.getAccount(index).setStatus(AccountStatus.ACTIVE);
+                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -681,6 +688,10 @@ public class App {
                     try {
                         visitor.denyAccount(account);
                         logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
+                        if (visitor.getAccounts().contains(account)) {
+                            int index = visitor.getAccounts().indexOf(account);
+                            visitor.getAccount(index).setStatus(AccountStatus.DENIED);
+                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -750,7 +761,7 @@ public class App {
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
                             logger.info(visitor.getUsername() + ": applied for a join account " +
-                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
+                                    "with "+otherUser.getUsername()+" with a starting balance of " + startingBalance);
                         } catch (Exception e) {
                             logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
@@ -899,8 +910,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
-                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
@@ -1034,6 +1046,10 @@ public class App {
                     try {
                         visitor.approveAccount(account);
                         logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
+                        if (visitor.getAccounts().contains(account)) {
+                            int index = visitor.getAccounts().indexOf(account);
+                            visitor.getAccount(index).setStatus(AccountStatus.ACTIVE);
+                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1050,6 +1066,10 @@ public class App {
                     try {
                         visitor.denyAccount(account);
                         logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
+                        if (visitor.getAccounts().contains(account)) {
+                            int index = visitor.getAccounts().indexOf(account);
+                            visitor.getAccount(index).setStatus(AccountStatus.DENIED);
+                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1066,6 +1086,10 @@ public class App {
                     try {
                         visitor.cancelAccount(account);
                         logger.info(visitor.getUsername() + ": cancelled account with account_id "+account.getId());
+                        if (visitor.getAccounts().contains(account)) {
+                            int index = visitor.getAccounts().indexOf(account);
+                            visitor.getAccount(index).setStatus(AccountStatus.CANCELLED);
+                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to cancel account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1108,7 +1132,7 @@ public class App {
                         System.out.println("Enter new account description:");
                         account.setDescription(sc.next());
                         accountDAO.updateAccount(account);
-                        logger.info(visitor.getUsername()+": updated account for account with account_id "+account.getId());
+                        logger.info(visitor.getUsername()+": updated account with account_id "+account.getId());
                     }
                     if (choice == '2') {
                         accountDAO.deleteAccount(account);
@@ -1212,7 +1236,7 @@ public class App {
                         try {
                             user.applyForJointAccount(startingBalance, otherUser);
                             logger.info(visitor.getUsername() + ": applied for a join account " +
-                                    "with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
+                                    " with "+otherUser.getUsername()+"with a starting balance of " + startingBalance);
                         } catch (Exception e) {
                             logger.warn(visitor.getUsername() + ": failed attempt to apply for a joint account with a starting balance of " + startingBalance + ", " + e.getMessage());
                         }
@@ -1361,8 +1385,9 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
+                    otherUser.printAccounts();
                     System.out.println("Which account would you like to transfer to?");
-                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size());
+                    System.out.printf("Account Number (0 - %d): ", otherUser.getAccounts().size()-1);
                     accountNumber = sc.nextInt();
                     if (accountNumber > user.getAccounts().size() || accountNumber < 0) {
                         System.out.println("Account could not be found in \""+username+"\" accounts.\n" +
