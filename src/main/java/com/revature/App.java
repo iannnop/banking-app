@@ -1417,7 +1417,7 @@ public class App {
             System.out.printf("Welcome back, %s!%n", visitor.getUsername());
         } catch (FileNotFoundException e) {
             visitor = login();
-            System.out.printf("%n%nHello %s! Welcome to Bank Application%n", visitor.getFirstName());
+            System.out.printf("%n%nHello %s! Welcome to Simple Bank Application%n", visitor.getFirstName());
         } catch (IOException e) {
             System.out.println("An IO error has occurred. Please restart the program.");
         } catch (ClassNotFoundException e) {
