@@ -1,11 +1,14 @@
 package com.revature.account;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.revature.user.User;
 import com.revature.user.UserDAOImpl;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AccountController {
     UserDAOImpl userDAO;
@@ -66,7 +69,9 @@ public class AccountController {
             return;
         }
 
-        double startingBalance = Double.parseDouble(ctx.req.getParameter("startingBalance"));
+        String jsonString = ctx.body();
+        HashMap<String,String> body = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, String>>(){}.getType());
+        double startingBalance = Double.parseDouble(body.get("startingBalance"));
         user.applyForAccount(startingBalance);
         Account account = user.getAccount(user.getAccounts().size()-1);
 
@@ -75,7 +80,7 @@ public class AccountController {
     };
 
     /*
-    * Expects { status, balance, description }
+    * Expects { status, balance, description } in body
     * */
     public Handler updateAccount = ctx -> {
         String id = ctx.pathParam("id");
@@ -85,12 +90,15 @@ public class AccountController {
             ctx.status(404);
             return;
         }
-        String status = ctx.req.getParameter("status");
-        String balance = ctx.req.getParameter("balance");
-        String description = ctx.req.getParameter("description");
+        String jsonString = ctx.body();
+        HashMap<String,String> body = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, String>>(){}.getType());
 
-        account.setStatus(AccountStatus.valueOf(status));
-        account.setBalance(Double.parseDouble(balance));
+        AccountStatus status = AccountStatus.valueOf(body.get("status"));
+        double balance = Double.parseDouble(body.get("balance"));
+        String description = body.get("description");
+
+        account.setStatus(status);
+        account.setBalance(balance);
         account.setDescription(description);
 
         accountDAO.updateAccount(account);
@@ -111,6 +119,6 @@ public class AccountController {
         accountDAO.deleteAccount(account);
 
         System.out.println("200 OK - Account with id "+id+" deleted");
-        ctx.status(200);
+        ctx.status(200).json(account);
     };
 }
