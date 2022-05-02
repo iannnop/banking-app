@@ -6,9 +6,11 @@ import com.revature.user.UserController;
 import io.javalin.Javalin;
 
 public class Server {
-    Javalin app = Javalin.create().start(7070);
+    public static void main(String[] args) {
+        Javalin app = Javalin.create().start(7070);
 
-    UserController userController = new UserController(app);
-    AccountController accountController = new AccountController(app);
-    TransactionController transactionController = new TransactionController(app);
+        UserController userController = new UserController(app);
+        AccountController accountController = new AccountController(app);
+        TransactionController transactionController = new TransactionController(app);
+    }
 }
