@@ -1,7 +1,11 @@
 package com.revature.user;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
+
+import java.util.HashMap;
 
 public class UserController {
     UserDAOImpl userDAO;
@@ -34,21 +38,26 @@ public class UserController {
     * Expects { role, username, password, firstName, lastName, email } in body
     * */
     public Handler createUser = ctx -> {
-        UserRole role = UserRole.valueOf(ctx.req.getParameter("role"));
-        String username = ctx.req.getParameter("username");
-        String password = ctx.req.getParameter("password");
-        String firstName = ctx.req.getParameter("firstName");
-        String lastName = ctx.req.getParameter("lastName");
-        String email = ctx.req.getParameter("email");
+        String jsonString = ctx.body();
+        HashMap<String,String> body = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, String>>(){}.getType());
 
-        User user = userDAO.createUser(role, username,password,firstName,lastName, email);
+        UserRole role = UserRole.valueOf(body.get("role"));
+        String username = body.get("username");
+        String password = body.get("password");
+        String firstName = body.get("firstName");
+        String lastName = body.get("lastName");
+        String email = body.get("email");
+
+        User user = userDAO.createUser(role,username,password,firstName,lastName,email);
         System.out.println("200 OK - "+role+" "+username+" created");
         ctx.status(201).json(user);
     };
 
+    /*
+     * Expects { role, password, firstName, lastName, email, phone, address } in body
+     * */
     public Handler updateUser = ctx -> {
         String username = ctx.pathParam("username");
-
 
         User user = userDAO.getUser(username);
         if (user == null) {
@@ -57,15 +66,18 @@ public class UserController {
             return;
         }
 
-        String role = ctx.req.getParameter("role");
-        String password = ctx.req.getParameter("password");
-        String firstName = ctx.req.getParameter("firstName");
-        String lastName = ctx.req.getParameter("lastName");
-        String email = ctx.req.getParameter("email");
-        String phone = ctx.req.getParameter("phone");
-        String address = ctx.req.getParameter("address");
+        String jsonString = ctx.body();
+        HashMap<String,String> body = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, String>>(){}.getType());
 
-        user.setRole(UserRole.valueOf(role));
+        UserRole role = UserRole.valueOf(body.get("role"));
+        String password = body.get("password");
+        String firstName = body.get("firstName");
+        String lastName = body.get("lastName");
+        String email = body.get("email");
+        String phone = body.get("phone");
+        String address = body.get("address");
+
+        user.setRole(role);
         user.setPassword(password);
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -92,6 +104,6 @@ public class UserController {
         userDAO.deleteUser(user);
 
         System.out.println("200 OK - "+"USER "+username+" deleted");
-        ctx.status(200);
+        ctx.status(200).json(user);
     };
 }
