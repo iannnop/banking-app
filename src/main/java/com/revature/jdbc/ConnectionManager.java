@@ -7,9 +7,9 @@ public class ConnectionManager {
 
     private static Connection connection;
 
-    private final static String url = "jdbc:postgresql://heffalump.db.elephantsql.com:5432/pwglpqfu";
-    private final static String username = "pwglpqfu";
-    private final static String password = "gU8C96f3nEJN5n285gP5F9HM3-iUbdD5";
+    private final static String url = "url";
+    private final static String username = "username";
+    private final static String password = "password";
 
     private ConnectionManager() {}
     public static Connection getConnection() {
