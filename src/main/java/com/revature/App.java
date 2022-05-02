@@ -1096,7 +1096,7 @@ public class App {
                     }
                     System.out.println("What would you like to do?\n" +
                             "1 - Edit account status, account balance, and account description\n" +
-                            "2 - Delete account (WARNING: THIS WILL DELETE ALL ACCOUNT AND RELATED TRANSACTIONS)\n");
+                            "2 - Delete account (WARNING: THIS WILL DELETE AN ACCOUNT PERMANENTLY)\n");
                     System.out.println("Please select an option: ");
                     choice = sc.next().charAt(0);
                     if (choice == '1') {
@@ -1116,7 +1116,7 @@ public class App {
                     }
                     if (choice == '2') {
                         accountDAO.deleteAccount(account);
-                        logger.info(visitor.getUsername()+": deleted account with "+account.getId()+" and all related transactions");
+                        logger.info(visitor.getUsername()+": deleted account with "+account.getId());
                     } else {
                         System.out.println("Invalid option\n" +
                                 "Returning to main menu...\n");
@@ -1167,7 +1167,7 @@ public class App {
                         break;
                     }
                     otherUser.printUserInfo();
-                    System.out.println("WARNING: DELETING A USER WILL ALSO DELETE ALL THE USER ACCOUNTS\n" +
+                    System.out.println("WARNING: DELETING A USER IS PERMANENT\n" +
                             "ARE YOU SURE?\n" +
                             "1 - Yes, I want to delete the user and all accounts and transactions made by the user\n" +
                             "2 - No, take me back to the main menu");
