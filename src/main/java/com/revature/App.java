@@ -1167,16 +1167,12 @@ public class App {
                         break;
                     }
                     otherUser.printUserInfo();
-                    System.out.println("WARNING: DELETING A USER WILL ALSO DELETE ALL THE USER ACCOUNTS AND ALL RELATED TRANSACTIONS\n" +
+                    System.out.println("WARNING: DELETING A USER WILL ALSO DELETE ALL THE USER ACCOUNTS\n" +
                             "ARE YOU SURE?\n" +
                             "1 - Yes, I want to delete the user and all accounts and transactions made by the user\n" +
                             "2 - No, take me back to the main menu");
                     choice = sc.next().charAt(0);
                     if (choice == '1') {
-                        for (Account a : otherUser.getAccounts()) {
-                            accountDAO.deleteAccount(a);
-                            logger.info(visitor.getUsername()+": deleted account with account_id "+a.getId());
-                        }
                         userDAO.deleteUser(otherUser);
                         logger.info(visitor.getUsername()+": deleted "+otherUser.getRole()+" "+otherUser.getUsername());
                     } else {
