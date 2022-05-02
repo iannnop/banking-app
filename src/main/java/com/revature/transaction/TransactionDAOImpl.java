@@ -15,7 +15,7 @@ public class TransactionDAOImpl implements TransactionDAO {
         try {
             String query = "SELECT * FROM \"Transaction\" " +
                     "INNER JOIN \"AccountTransaction\" ON \"Transaction\".id = \"AccountTransaction\".transaction_id " +
-                    "WHERE id = ?";
+                    "WHERE transaction_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
@@ -122,11 +122,12 @@ public class TransactionDAOImpl implements TransactionDAO {
         Connection connection = ConnectionManager.getConnection();
 
         try {
-            String sql = "UPDATE \"Transaction\" amount = ?, type = ?, description = ? WHERE id = ?";
+            String sql = "UPDATE \"Transaction\" SET amount = ?, type = ?, description = ? WHERE id = ?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setDouble(1, transaction.getAmount());
             pstmt.setString(2, String.valueOf(transaction.getType()));
             pstmt.setString(3, transaction.getDescription());
+            pstmt.setInt(4, transaction.getId());
 
             pstmt.execute();
 
