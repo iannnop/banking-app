@@ -319,7 +319,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
-                    otherAccount = user.getAccount(accountNumber);
+                    otherAccount = otherUser.getAccount(accountNumber);
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
@@ -565,7 +565,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
-                    otherAccount = user.getAccount(accountNumber);
+                    otherAccount = otherUser.getAccount(accountNumber);
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
@@ -668,10 +668,6 @@ public class App {
                     try {
                         visitor.approveAccount(account);
                         logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
-                        if (visitor.getAccounts().contains(account)) {
-                            int index = visitor.getAccounts().indexOf(account);
-                            visitor.getAccount(index).setStatus(AccountStatus.ACTIVE);
-                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -688,10 +684,6 @@ public class App {
                     try {
                         visitor.denyAccount(account);
                         logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
-                        if (visitor.getAccounts().contains(account)) {
-                            int index = visitor.getAccounts().indexOf(account);
-                            visitor.getAccount(index).setStatus(AccountStatus.DENIED);
-                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -919,7 +911,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
-                    otherAccount = user.getAccount(accountNumber);
+                    otherAccount = otherUser.getAccount(accountNumber);
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
@@ -1046,10 +1038,6 @@ public class App {
                     try {
                         visitor.approveAccount(account);
                         logger.info(visitor.getUsername() + ": approved account with account_id "+account.getId());
-                        if (visitor.getAccounts().contains(account)) {
-                            int index = visitor.getAccounts().indexOf(account);
-                            visitor.getAccount(index).setStatus(AccountStatus.ACTIVE);
-                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to approve account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1066,10 +1054,6 @@ public class App {
                     try {
                         visitor.denyAccount(account);
                         logger.info(visitor.getUsername() + ": denied account with account_id "+account.getId());
-                        if (visitor.getAccounts().contains(account)) {
-                            int index = visitor.getAccounts().indexOf(account);
-                            visitor.getAccount(index).setStatus(AccountStatus.DENIED);
-                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to deny account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1086,10 +1070,6 @@ public class App {
                     try {
                         visitor.cancelAccount(account);
                         logger.info(visitor.getUsername() + ": cancelled account with account_id "+account.getId());
-                        if (visitor.getAccounts().contains(account)) {
-                            int index = visitor.getAccounts().indexOf(account);
-                            visitor.getAccount(index).setStatus(AccountStatus.CANCELLED);
-                        }
                     } catch (UnauthorizedException e) {
                         logger.warn(visitor.getUsername()+": failed attempt to cancel account with account_id "+account.getId()+", "+e.getMessage());
                     }
@@ -1394,7 +1374,7 @@ public class App {
                                 "Returning to main menu...\n");
                         break;
                     }
-                    otherAccount = user.getAccount(accountNumber);
+                    otherAccount = otherUser.getAccount(accountNumber);
                     System.out.println("How much would you like to transfer?");
                     amount = sc.nextDouble();
                     System.out.println("Please enter a transfer description:");
