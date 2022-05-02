@@ -82,7 +82,7 @@ public class AccountDAOImpl implements AccountDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("user_id");
+                int id = rs.getInt("account_id");
                 Timestamp accountCreated = rs.getTimestamp("account_created");
                 AccountStatus status = AccountStatus.valueOf(rs.getString("status"));
                 double balance = rs.getDouble("balance");
